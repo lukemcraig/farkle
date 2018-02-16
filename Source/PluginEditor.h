@@ -43,6 +43,8 @@ private:
 
 	TextButton  linearInterpolationButton_;
 	TextButton  nearestNeighborButton_;
+	TextButton  secondOrderInterpolationButton_;
+	TextButton  cubicInterpolationButton;
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)
 };

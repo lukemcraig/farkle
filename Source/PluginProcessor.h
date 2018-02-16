@@ -76,6 +76,8 @@ private:
 	//==============================================================================
 	void NearestNeighborInterpolation(float drp, float * delayData, float &interpolatedSample);
 	void LinearInterpolation(float drp, float * delayData, float &interpolatedSample);
+	void CubicInterpolation(float drp, float * delayData, float &interpolatedSample);
+	void SecondOrderPolynomialInterpolation(float drp, float * delayData, float &interpolatedSample);
 	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
 	//==============================================================================

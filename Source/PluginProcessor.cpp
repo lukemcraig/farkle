@@ -8,7 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include <assert.h> 
 
 //==============================================================================
 FarkleAudioProcessor::FarkleAudioProcessor()
@@ -180,7 +180,10 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 				NearestNeighborInterpolation(drp, delayData, interpolatedSample);
 			if (interpolationType == 1)
 				LinearInterpolation(drp, delayData, interpolatedSample);
-
+			if (interpolationType == 2)
+				SecondOrderPolynomialInterpolation(drp, delayData, interpolatedSample);
+			if (interpolationType == 3)
+				CubicInterpolation(drp, delayData, interpolatedSample);
 
 			// the input sample is written to delayData at the write pointer
 			delayData[dwp] = channelData[sample];
@@ -198,6 +201,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			if (ph >= 1.0) {
 				ph -= 1.0;
 			}
+			assert(ph>0.0 && ph<1.0);
 		}
     }
 	// now that all channels are finished with this block, update the instance variable
@@ -206,6 +210,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	// debugging instance variables
 	currentDelayValueDebug_ = currentDelay;
 	delayReadPositionDebug_ = drp;
+
 	// clear garbage output channels that didn't contain input data
 	for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
@@ -239,15 +244,25 @@ void FarkleAudioProcessor::LinearInterpolation(float drp, float * delayData, flo
 	interpolatedSample = fraction * delayData[nextSample] + (1.0f - fraction)*delayData[previousSample];
 }
 
+void FarkleAudioProcessor::SecondOrderPolynomialInterpolation(float drp, float * delayData, float &interpolatedSample)
+{
+	// x(t) = ( (t-n-1)(t-n)x[n-1]-2(t-n-1)(t-n+1)x[n]+(t-n)(t-n+1)x[n+1] ) / 2
+
+
+	//interpolatedSample = 
+}
+
 void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, float &interpolatedSample)
 {
 	// x(t) = c3(t-n)^3 + c2(t-n)^2 + c1(t-n) + c0  for n<= t < n+1
 
 	// c3 = -x[n-1]+x[n]-x[n+1]+x[n+2]
-	// c2
+	// c2 = x[n-1]
+	// c1 = x[n+1]-x[n-1]
+	// c0 = x[n]
 
 	
-	//interpolatedSample = fraction * delayData[nextSample] + (1.0f - fraction)*delayData[previousSample];
+	//interpolatedSample = 
 }
 
 //==============================================================================

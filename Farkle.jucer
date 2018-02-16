@@ -3,13 +3,13 @@
 <JUCERPROJECT id="TPdIuo" name="Farkle" displaySplashScreen="1" reportAppUsage="1"
               splashScreenColour="Dark" projectType="audioplug" version="1.0.0"
               bundleIdentifier="com.liminalsignals.Farkle" includeBinaryInAppConfig="1"
-              cppLanguageStandard="11" companyCopyright="" buildVST="1" buildVST3="0"
-              buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" buildStandalone="1"
-              enableIAA="0" pluginName="Farkle" pluginDesc="Farkle" pluginManufacturer="Liminal Signals"
-              pluginManufacturerCode="LSPA" pluginCode="Tpdi" pluginChannelConfigs=""
-              pluginIsSynth="0" pluginWantsMidiIn="0" pluginProducesMidiOut="0"
-              pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0" pluginAUExportPrefix="FarkleAU"
-              pluginRTASCategory="" aaxIdentifier="com.yourcompany.Farkle"
+              cppLanguageStandard="11" companyCopyright="Liminal Signals" buildVST="1"
+              buildVST3="0" buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0"
+              buildStandalone="1" enableIAA="0" pluginName="Farkle" pluginDesc="Farkle"
+              pluginManufacturer="Liminal Signals" pluginManufacturerCode="LSPA"
+              pluginCode="Tpdi" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="0"
+              pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
+              pluginAUExportPrefix="FarkleAU" pluginRTASCategory="" aaxIdentifier="com.yourcompany.Farkle"
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.2.0"
               companyName="Liminal Signals">
   <MAINGROUP id="m4D9r1" name="Farkle">
@@ -24,7 +24,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017">
+    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion="10.0.15063.0">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"

@@ -15,7 +15,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     // set the gui's window size
-    setSize (400, 300);
+    setSize (400, 400);
 	// make the gui's window resizeable
 	setResizable(true, true);
 
@@ -67,12 +67,22 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	nearestNeighborButton_.setButtonText("Nearest Neighbor");
 	nearestNeighborButton_.setTriggeredOnMouseDown(true);
 	nearestNeighborButton_.addListener(this);
-	addAndMakeVisible(nearestNeighborButton_);
+	addAndMakeVisible(nearestNeighborButton_); //TODO why does this not use the address-of operator?
 
 	linearInterpolationButton_.setButtonText("Linear");
 	linearInterpolationButton_.setTriggeredOnMouseDown(true);
 	linearInterpolationButton_.addListener(this);
 	addAndMakeVisible(linearInterpolationButton_);
+
+	secondOrderInterpolationButton_.setButtonText("Second Order");
+	secondOrderInterpolationButton_.setTriggeredOnMouseDown(true);
+	secondOrderInterpolationButton_.addListener(this);
+	addAndMakeVisible(secondOrderInterpolationButton_);
+
+	cubicInterpolationButton.setButtonText("Cubic");
+	cubicInterpolationButton.setTriggeredOnMouseDown(true);
+	cubicInterpolationButton.addListener(this);
+	addAndMakeVisible(cubicInterpolationButton);
 
 	// start the timer for polling the debug values
 	startTimerHz(10);
@@ -103,6 +113,8 @@ void FarkleAudioProcessorEditor::resized()
 	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
 	nearestNeighborButton_.setBounds(40, delayReadPositionSlider_.getBottom(), 100, 40);
 	linearInterpolationButton_.setBounds(nearestNeighborButton_.getRight(), delayReadPositionSlider_.getBottom(), 100, 40);
+	secondOrderInterpolationButton_.setBounds(40, linearInterpolationButton_.getBottom(), 100, 40);
+	cubicInterpolationButton.setBounds(secondOrderInterpolationButton_.getRight(), linearInterpolationButton_.getBottom(), 100, 40);
 }
 
 void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
@@ -122,6 +134,12 @@ void FarkleAudioProcessorEditor::buttonClicked(Button* button)
 	}
 	if (button == &linearInterpolationButton_) {
 		processor.interpolationType = 1;
+	}
+	if (button == &secondOrderInterpolationButton_) {
+		processor.interpolationType = 2;
+	}
+	if (button == &cubicInterpolationButton) {
+		processor.interpolationType = 3;
 	}
 }
 
