@@ -100,7 +100,7 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 		processor.setMainLFOFrequency(mainLFOFrequencySlider_.getValue());
 
 	if (slider == &mainLFOWidthSlider_)
-		processor.setMainLFOWidth((int)(mainLFOWidthSlider_.getValue()));
+		processor.setMainLFOWidth(mainLFOWidthSlider_.getValue());
 }
 
 void FarkleAudioProcessorEditor::timerCallback() {

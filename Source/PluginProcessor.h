@@ -59,7 +59,7 @@ public:
 	void setMainLFOFrequency(float newFreq);
 	/** Sets the main LFO Width in samples
 	*/
-	void setMainLFOWidth(int newWidth);
+	void setMainLFOWidth(float newWidth);
 	//==============================================================================
 	float currentDelayValueDebug_;
 	int delayReadPositionDebug_;
@@ -67,7 +67,7 @@ public:
 	int delayBufferLength_;
 	//==============================================================================
 	float mainLFOFreq_;
-	int mainLFOWidth_;
+	float mainLFOWidth_;
 
 private:
 	//==============================================================================

@@ -244,7 +244,7 @@ void FarkleAudioProcessor::setMainLFOFrequency(float newFreq)
 	mainLFOFreq_ = newFreq;
 }
 
-void FarkleAudioProcessor::setMainLFOWidth(int newWidth)
+void FarkleAudioProcessor::setMainLFOWidth(float newWidth)
 {
 	mainLFOWidth_ = newWidth;
 }
