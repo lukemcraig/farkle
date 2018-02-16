@@ -62,6 +62,8 @@ public:
 	int delayBufferLength_;
 	int interpolationType;
 	//==============================================================================
+	float mainLFOBaseFreq_;
+
 	float mainLFOFreq_;
 	float mainLFOWidth_;
 

@@ -39,6 +39,7 @@ private:
 	Slider delayWritePositionSlider_;
 	Slider delayReadPositionSlider_;
 
+	Slider mainLFOBaseFrequencySlider_;
 	Slider mainLFOFrequencySlider_;
 	Slider mainLFOWidthSlider_;
 

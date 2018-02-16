@@ -26,6 +26,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 
 	delayWritePosition_ = 0;
 	currentDelayValueDebug_ = 0.0;
+	mainLFOBaseFreq_ = 2.0;
 	mainLFOFreq_ = 2.0;
 	mainLFOWidth_ = .01;
 	mainLFOPhase_ = 0.0;
@@ -161,6 +162,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	float local_mainLFOPhase = 0.0;
 	float local_secondLFOPhase = 0.0;
 	float local_mainLFOFrequency = 0.0;
+	float local_mainLFOBaseFrequency = 0.0;
 
 	float currentDelay = 0.0;
 	float drp = 0.0;
@@ -174,6 +176,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		dwp = delayWritePosition_;
 		local_mainLFOPhase = mainLFOPhase_;
 		local_mainLFOFrequency = mainLFOFreq_;
+		local_mainLFOBaseFrequency = mainLFOBaseFreq_;
 		local_secondLFOPhase = secondLFOPhase_;
 
 		for (int sample = 0; sample < numSamples; ++sample) {	
@@ -216,7 +219,8 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			assert(local_secondLFOPhase<1.0);
 
 			// update the main LFO's frequency
-			local_mainLFOFrequency = secondLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_secondLFOPhase)); //TODO make this more effecient
+			local_mainLFOFrequency = local_mainLFOBaseFrequency + secondLFOWidth_ * (0.5 * sinf(2.0 * PI * local_secondLFOPhase)); //TODO make this more effecient
+			DBG(local_mainLFOBaseFrequency);
 			assert(local_mainLFOFrequency>=0.0);
 
 			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
