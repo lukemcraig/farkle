@@ -105,6 +105,8 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 	delayBuffer_.setSize(2, delayBufferLength_);	// set the buffer to 2 channels and the size of the delayBufferLength_
 	delayBuffer_.clear(); // initialize the memory to 0
 
+	inverseSampleRate_ = 1 / (float)sampleRate;
+
 	setDelayReadPosition();
 }
 
@@ -153,8 +155,8 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
     const int totalNumOutputChannels = getTotalNumOutputChannels();
 	const int numSamples = buffer.getNumSamples();
 
-	int drp = 0; // delay read pointer
-	int dwp = 0; // delay write pointer
+
+	int dwp = 0; // local delay write position
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -162,26 +164,46 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
         float* channelData = buffer.getWritePointer (channel);
 		// get the pointer to the delay buffer
 		float* delayData = delayBuffer_.getWritePointer(channel);
-		// copy the variables so that the channels are independently processed
-		drp = delayReadPosition_;
+		// copy the state of this instance variable so that the channels are independently processed
 		dwp = delayWritePosition_;
 
-		for (int sample = 0; sample < numSamples; ++sample) {
+		for (int sample = 0; sample < numSamples; ++sample) {			
 			// the input sample is written to delayData at the write pointer
 			delayData[dwp] = channelData[sample];
 
-			// the output sample is read from delayData at the read pointer
-			channelData[sample] = delayData[drp];
+			// calculate the (fractional) delay in ms based on the lfo's current amplitude
+			float currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0f * PI * lfoPhase_)); //TODO make this more effecient
+			// then the delay read position is (hypothetically) that ^ and 3 more samples behind the write position 
+			float drp = fmodf((float)dwp - //TODO fmodf is to account for the circular buffer?
+				(float)(currentDelay * getSampleRate()) + 
+				(float)delayBufferLength_ - 3.0, 
+				(float)delayBufferLength_);
+			// and then we need to do (linear) interpolation to calculate a sample amplitude "inbetween" integer indicies
+			// get the fractional part of the drp
+			float fraction = drp - floorf(drp);
+			// get the sample to the left of the fractional sample
+			int previousSample = (int)floorf(drp);
+			// get the sample to the right of the fractional sample, accounting for the circular buffer
+			int nextSample = (previousSample + 1) % delayBufferLength_;
+			// calculate the "inbetween" sample amplitude by getting a weighted average of the 
+			float interpolatedSample = fraction * delayData[nextSample] + (1.0f-fraction)*delayData[previousSample]; //TODO polynomial interpolation	
 
-			// the read and write pointers are incremented
+			// the output sample is the interpolatedSample
+			channelData[sample] = interpolatedSample;
+
+			// the write pointer increments exactly one sample
 			if (++dwp >= delayBufferLength_)
 				dwp = 0;
-			if (++drp >= delayBufferLength_)
-				drp = 0;
+
+			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
+			lfoPhase_ += mainLFOFreq_ * inverseSampleRate_;
+			// wrap it between 0.0 and 1.0
+			if (lfoPhase_ >= 1.0) {
+				lfoPhase_ -= 1.0;
+			}
 		}
     }
-	// now that all channels are finished with this block, update the instance variables
-	delayReadPosition_ = drp;
+	// now that all channels are finished with this block, update the instance variable
 	delayWritePosition_ = dwp;
 
 	// clear garbage output channels that didn't contain input data
@@ -224,10 +246,12 @@ void FarkleAudioProcessor::setDelayTime(int newDelayTime)
 
 void FarkleAudioProcessor::setMainLFOFrequency(float newFreq)
 {
+	mainLFOFreq_ = newFreq;
 }
 
 void FarkleAudioProcessor::setMainLFOWidth(int newWidth)
 {
+	mainLFOWidth_ = newWidth;
 }
 
 //==============================================================================
