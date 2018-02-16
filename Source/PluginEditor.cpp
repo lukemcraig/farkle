@@ -22,9 +22,9 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	// make a horizontal slider widget for the delay time
 	delayTimeSlider_.setSliderStyle(Slider::LinearHorizontal);	
 	delayTimeSlider_.setRange(0.0, processor.delayBufferLength_, 1.0);
-	delayTimeSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, delayTimeSlider_.getTextBoxHeight());
+	delayTimeSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, delayTimeSlider_.getTextBoxHeight());
 	delayTimeSlider_.setPopupDisplayEnabled(true, false, this);
-	delayTimeSlider_.setTextValueSuffix("Delay Time (samples)");
+	delayTimeSlider_.setTextValueSuffix(" Delay Time (samples)");
 	delayTimeSlider_.setValue(0.0);
 	addAndMakeVisible(&delayTimeSlider_); // TODO why does this use the address-of operator?
 	// add the listener to the slider									  
@@ -43,13 +43,14 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
 
     g.setColour (Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
+    g.drawFittedText ("Farkle", getLocalBounds(), Justification::topLeft, 1);
 }
 
 void FarkleAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+	delayTimeSlider_.setBounds(40, 30, 300, 40);
 }
 
 void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
