@@ -15,7 +15,8 @@
 //==============================================================================
 /**
 */
-class FarkleAudioProcessorEditor  : public AudioProcessorEditor
+class FarkleAudioProcessorEditor  : public AudioProcessorEditor,
+		private Slider::Listener
 {
 public:
     FarkleAudioProcessorEditor (FarkleAudioProcessor&);
@@ -26,6 +27,8 @@ public:
     void resized() override;
 
 private:
+	//==============================================================================
+	void sliderValueChanged(Slider* slider) override;
 	//==============================================================================
     FarkleAudioProcessor& processor;
 	Slider delayTimeSlider_;

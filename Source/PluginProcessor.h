@@ -63,14 +63,12 @@ public:
 	double delayTime_;
 	int delayReadPosition_;
 	int delayWritePosition_;
-
+	int delayBufferLength_;
 private:
 	//==============================================================================
 	void setDelayReadPosition();
-
 	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
-	int delayBufferLength_;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessor)
 };
