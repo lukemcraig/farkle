@@ -21,7 +21,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the delay time
 	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);	
-	currentDelaySlider_.setRange(0.0, 100.0, 0.1);
+	currentDelaySlider_.setRange(0.0, 2.0, 0.01);
 	currentDelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, currentDelaySlider_.getTextBoxHeight());
 	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
 	currentDelaySlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
@@ -30,7 +30,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	
 	// make a horizontal slider widget for the main FLO frequency
 	mainLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOFrequencySlider_.setRange(0.0, 100, 1.0);
+	mainLFOFrequencySlider_.setRange(0.0, 2.0,0.01);
 	mainLFOFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOFrequencySlider_.getTextBoxHeight());
 	mainLFOFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOFrequencySlider_.setTextValueSuffix(" Main LFO frequency (Hz)"); //TODO attach a label instead
@@ -41,7 +41,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the main FLO width (aka depth)
 	mainLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOWidthSlider_.setRange(0.0, 100, 1.0);
+	mainLFOWidthSlider_.setRange(0.0, 2.0, 0.01);
 	mainLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOWidthSlider_.getTextBoxHeight());
 	mainLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width (Samples)"); //TODO attach a label instead
