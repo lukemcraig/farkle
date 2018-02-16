@@ -32,6 +32,8 @@ private:
 	//==============================================================================
     FarkleAudioProcessor& processor;
 	Slider delayTimeSlider_;
+	Slider mainLFOFrequencySlider_;
+	Slider mainLFOWidthSlider_;
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)
 };
