@@ -100,10 +100,10 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need.
+	delayBufferLength_ = FOUR_SECONDS_AT_48K; // TODO set this more intelligently
+
 	delayBuffer_.setSize(2, delayBufferLength_);	// set the buffer to 2 channels and the size of the delayBufferLength_
 	delayBuffer_.clear(); // initialize the memory to 0
-
-	delayBufferLength_ = FOUR_SECONDS_AT_48K; // TODO set this more intelligently
 
 	setDelayReadPosition();
 }
