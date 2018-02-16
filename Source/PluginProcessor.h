@@ -54,10 +54,6 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 	//==============================================================================
-	/** Sets the delay time (in samples) and updates the delayReadPosition_ accordingly.
-		Should be called from the GUI.
-	*/
-	void setDelayTime(int newDelayTime);
 	/** Sets the main LFO frequency
 	*/
 	void setMainLFOFrequency(float newFreq);
@@ -65,8 +61,7 @@ public:
 	*/
 	void setMainLFOWidth(int newWidth);
 	//==============================================================================
-	double delayTime_;
-	int delayReadPosition_;
+	float currentDelayValueDebug_;
 	int delayWritePosition_;
 	int delayBufferLength_;
 	//==============================================================================
@@ -75,12 +70,10 @@ public:
 
 private:
 	//==============================================================================
-	void setDelayReadPosition();
-	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
 	//==============================================================================
 	float lfoPhase_;
-	float inverseSampleRate_;
+	float inverseSampleRate_; // so we don't have to recalculate it every sample
 	//==============================================================================
 	const int ONE_SECOND_AT_48K = 48000;
 	const double PI = 3.14159265358979323846;

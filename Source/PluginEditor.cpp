@@ -20,16 +20,14 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	setResizable(true, true);
 
 	// make a horizontal slider widget for the delay time
-	delayTimeSlider_.setSliderStyle(Slider::LinearHorizontal);	
-	delayTimeSlider_.setRange(0.0, processor.delayBufferLength_, 1.0);
-	delayTimeSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, delayTimeSlider_.getTextBoxHeight());
-	delayTimeSlider_.setPopupDisplayEnabled(true, false, this);
-	delayTimeSlider_.setTextValueSuffix(" Delay Time (samples)"); //TODO attach a label instead
-	delayTimeSlider_.setValue(0.0);
-	addAndMakeVisible(&delayTimeSlider_); // TODO why does this use the address-of operator?
-	// add the listener to the slider									  
-	delayTimeSlider_.addListener(this);
-
+	delayReadPositionSlider_.setSliderStyle(Slider::LinearHorizontal);	
+	delayReadPositionSlider_.setRange(0.0, 100.0, 0.1);
+	delayReadPositionSlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, delayReadPositionSlider_.getTextBoxHeight());
+	delayReadPositionSlider_.setPopupDisplayEnabled(true, false, this);
+	delayReadPositionSlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
+	delayReadPositionSlider_.setValue(0.0);
+	addAndMakeVisible(&delayReadPositionSlider_); // TODO why does this use the address-of operator?						  
+	
 	// make a horizontal slider widget for the main FLO frequency
 	mainLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
 	mainLFOFrequencySlider_.setRange(0.0, 100, 1.0);
@@ -51,6 +49,9 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	addAndMakeVisible(&mainLFOWidthSlider_); // TODO why does this use the address-of operator?
 	 // add the listener to the slider									  
 	mainLFOWidthSlider_.addListener(this);
+
+	// start the timer for polling the debug values
+	startTimerHz(30);
 }
 
 FarkleAudioProcessorEditor::~FarkleAudioProcessorEditor()
@@ -71,21 +72,21 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
 void FarkleAudioProcessorEditor::resized()
 {
     // lay out the positions of any widgets
-	delayTimeSlider_.setBounds(40, 30, 300, 40);
-	mainLFOFrequencySlider_.setBounds(40, delayTimeSlider_.getBottom(), 300, 40);
+	delayReadPositionSlider_.setBounds(40, 30, 300, 40);
+	mainLFOFrequencySlider_.setBounds(40, delayReadPositionSlider_.getBottom(), 300, 40);
 	mainLFOWidthSlider_.setBounds(40, mainLFOFrequencySlider_.getBottom(), 300, 40);
 }
 
 void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 {
-	// if the slider pointer is pointing at the memory address where delayTimeSlider_ is stored, 
-	if (slider == &delayTimeSlider_) 
-		// update the delay time in PluginProcessor 
-		processor.setDelayTime((int)(delayTimeSlider_.getValue()));
-
+	// if the slider pointer is pointing at the memory address where mainLFOFrequencySlider_ is stored, 
 	if (slider == &mainLFOFrequencySlider_)
 		processor.setMainLFOFrequency(mainLFOFrequencySlider_.getValue());
 
 	if (slider == &mainLFOWidthSlider_)
 		processor.setMainLFOWidth((int)(mainLFOWidthSlider_.getValue()));
+}
+
+void FarkleAudioProcessorEditor::timerCallback() {
+	delayReadPositionSlider_.setValue(processor.currentDelayValueDebug_);
 }

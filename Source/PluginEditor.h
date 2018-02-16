@@ -16,7 +16,8 @@
 /**
 */
 class FarkleAudioProcessorEditor  : public AudioProcessorEditor,
-		private Slider::Listener
+		private Slider::Listener,
+		private Timer
 {
 public:
     FarkleAudioProcessorEditor (FarkleAudioProcessor&);
@@ -25,13 +26,14 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+	void timerCallback() override;
 
 private:
 	//==============================================================================
 	void sliderValueChanged(Slider* slider) override;
 	//==============================================================================
     FarkleAudioProcessor& processor;
-	Slider delayTimeSlider_;
+	Slider delayReadPositionSlider_;
 	Slider mainLFOFrequencySlider_;
 	Slider mainLFOWidthSlider_;
 	//==============================================================================
