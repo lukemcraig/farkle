@@ -73,7 +73,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the second LFO width (aka depth)
 	secondLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
-	secondLFOWidthSlider_.setRange(0.000, 0.1, 0.001);
+	secondLFOWidthSlider_.setRange(0.000, 1.0, 0.001);
 	secondLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, secondLFOWidthSlider_.getTextBoxHeight());
 	secondLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	secondLFOWidthSlider_.setTextValueSuffix(" Second LFO Width "); //TODO attach a label instead
