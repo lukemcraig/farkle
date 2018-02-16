@@ -234,23 +234,34 @@ void FarkleAudioProcessor::LinearInterpolation(float drp, float * delayData, flo
 {
 	// x(t) = (n + 1 - t)x[n] + (t - n)x[n + 1],  n <= t < n + 1 
 
-	// get the fractional part of the drp
-	float fraction = drp - floorf(drp);
+	// get the fractional part of the delay read position
+	float t = drp - floorf(drp);
 	// get the sample index to the left of the fractional sample
-	int previousSample = (int)floorf(drp);
+	int previousSampleIndex = (int)floorf(drp);
 	// get the sample index to the right of the fractional sample, accounting for the circular buffer
-	int nextSample = (previousSample + 1) % delayBufferLength_;
+	int nextSampleIndex = (previousSampleIndex + 1) % delayBufferLength_;
 	// calculate the "inbetween" sample amplitude by getting a weighted average of the 
-	interpolatedSample = fraction * delayData[nextSample] + (1.0f - fraction)*delayData[previousSample];
+	interpolatedSample = (1.0f - t)*delayData[previousSampleIndex] + t * delayData[nextSampleIndex];
 }
 
 void FarkleAudioProcessor::SecondOrderPolynomialInterpolation(float drp, float * delayData, float &interpolatedSample)
 {
-	// x(t) = ( (t-n-1)(t-n)x[n-1]-2(t-n-1)(t-n+1)x[n]+(t-n)(t-n+1)x[n+1] ) / 2
-	
-	//TODO
+	// x(t) = ( (t-n-1)(t-n)x[n-1] - 2(t-n-1)(t-n+1)x[n] + (t-n)(t-n+1)x[n+1] ) / 2
 
-	interpolatedSample = 0.0;
+	// get the fractional part of the delay read position
+	float t = drp - floorf(drp);
+	// get the sample index to the left of the fractional sample x[n]
+	int previousSampleIndex = (int)floorf(drp); // x[n]
+	// get the sample index 2 to the left of the fractional sample x[n-1], accounting for the circular buffer
+	int previousPreviousSampleIndex = (previousSampleIndex-1) % delayBufferLength_;
+	// get the sample index to the right of the fractional sample, accounting for the circular buffer
+	int nextSampleIndex = (previousSampleIndex + 1) % delayBufferLength_;
+	
+	float term1 = (t-1.0f)*t*delayData[previousPreviousSampleIndex];
+	float term2 = -2.0f*(t-1.0f)*(t+1.0f)*(delayData[previousSampleIndex]);
+	float term3 = t*(t+1.0f)*delayData[nextSampleIndex]; 
+
+	interpolatedSample = (term1 + term2 + term3) / 2.0f; //TODO what is the difference with the f or not?
 }
 
 void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, float &interpolatedSample)
