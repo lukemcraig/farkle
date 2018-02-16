@@ -21,7 +21,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the delay time
 	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);	
-	currentDelaySlider_.setRange(0.0, 2.0, 0.01);
+	currentDelaySlider_.setRange(0.0, 0.5, 0.01);
 	currentDelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, currentDelaySlider_.getTextBoxHeight());
 	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
 	currentDelaySlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
@@ -41,7 +41,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the main FLO width (aka depth)
 	mainLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOWidthSlider_.setRange(0.0, 2.0, 0.01);
+	mainLFOWidthSlider_.setRange(0.0, 0.5, 0.01);
 	mainLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOWidthSlider_.getTextBoxHeight());
 	mainLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width (Samples)"); //TODO attach a label instead
@@ -63,6 +63,16 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	delayReadPositionSlider_.setTextValueSuffix("drp"); //TODO attach a label instead
 	delayReadPositionSlider_.setValue(0.0);
 	addAndMakeVisible(&delayReadPositionSlider_);
+
+	nearestNeighborButton_.setButtonText("Nearest Neighbor");
+	nearestNeighborButton_.setTriggeredOnMouseDown(true);
+	nearestNeighborButton_.addListener(this);
+	addAndMakeVisible(nearestNeighborButton_);
+
+	linearInterpolationButton_.setButtonText("Linear");
+	linearInterpolationButton_.setTriggeredOnMouseDown(true);
+	linearInterpolationButton_.addListener(this);
+	addAndMakeVisible(linearInterpolationButton_);
 
 	// start the timer for polling the debug values
 	startTimerHz(10);
@@ -91,6 +101,8 @@ void FarkleAudioProcessorEditor::resized()
 	mainLFOWidthSlider_.setBounds(40, mainLFOFrequencySlider_.getBottom(), 300, 40);
 	delayWritePositionSlider_.setBounds(40, mainLFOWidthSlider_.getBottom(), 300, 40);
 	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
+	nearestNeighborButton_.setBounds(40, delayReadPositionSlider_.getBottom(), 100, 40);
+	linearInterpolationButton_.setBounds(nearestNeighborButton_.getRight(), delayReadPositionSlider_.getBottom(), 100, 40);
 }
 
 void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
@@ -101,6 +113,16 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 
 	if (slider == &mainLFOWidthSlider_)
 		processor.setMainLFOWidth(mainLFOWidthSlider_.getValue());
+}
+
+void FarkleAudioProcessorEditor::buttonClicked(Button* button)
+{
+	if (button == &nearestNeighborButton_) {
+		processor.interpolationType = 0;
+	}
+	if (button == &linearInterpolationButton_) {
+		processor.interpolationType = 1;
+	}
 }
 
 void FarkleAudioProcessorEditor::timerCallback() {

@@ -31,6 +31,8 @@ public:
 
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
 
+	
+
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -65,11 +67,15 @@ public:
 	int delayReadPositionDebug_;
 	int delayWritePosition_;
 	int delayBufferLength_;
+	int interpolationType;
 	//==============================================================================
 	float mainLFOFreq_;
 	float mainLFOWidth_;
 
 private:
+	//==============================================================================
+	void NearestNeighborInterpolation(float drp, float * delayData, float &interpolatedSample);
+	void LinearInterpolation(float drp, float * delayData, float &interpolatedSample);
 	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
 	//==============================================================================
