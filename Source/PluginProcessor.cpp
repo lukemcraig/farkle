@@ -108,8 +108,8 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 
 	delayBuffer_.setSize(2, delayBufferLength_);	// set the buffer to 2 channels and the size of the delayBufferLength_
 	delayBuffer_.clear(); // initialize the memory to 0
-
-	inverseSampleRate_ = 1 / (float)sampleRate;
+	lfoPhase_ = 1.0;
+	inverseSampleRate_ = 1.0 / (float)sampleRate;
 
 }
 
@@ -168,7 +168,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		for (int sample = 0; sample < numSamples; ++sample) {	
 			float interpolatedSample = 0.0;
 			// calculate the (fractional) delay in ms based on the lfo's current amplitude
-			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * lfoPhase_)); //TODO make this more effecient
+			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * ph)); //TODO make this more effecient
 			
 			// then the delay read position is (hypothetically) that ^ and 3 more samples behind the write position 
 			drp = fmodf((float)dwp - //TODO fmodf is to account for the circular buffer?
@@ -247,9 +247,10 @@ void FarkleAudioProcessor::LinearInterpolation(float drp, float * delayData, flo
 void FarkleAudioProcessor::SecondOrderPolynomialInterpolation(float drp, float * delayData, float &interpolatedSample)
 {
 	// x(t) = ( (t-n-1)(t-n)x[n-1]-2(t-n-1)(t-n+1)x[n]+(t-n)(t-n+1)x[n+1] ) / 2
+	
+	//TODO
 
-
-	//interpolatedSample = 
+	interpolatedSample = 0.0;
 }
 
 void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, float &interpolatedSample)
@@ -261,8 +262,8 @@ void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, floa
 	// c1 = x[n+1]-x[n-1]
 	// c0 = x[n]
 
-	
-	//interpolatedSample = 
+	//TODO
+	interpolatedSample = 0.0;
 }
 
 //==============================================================================

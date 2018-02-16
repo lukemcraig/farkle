@@ -30,7 +30,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	
 	// make a horizontal slider widget for the main FLO frequency
 	mainLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOFrequencySlider_.setRange(0.0, 2.0,0.01);
+	mainLFOFrequencySlider_.setRange(0.5, 5.0,0.001);
 	mainLFOFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOFrequencySlider_.getTextBoxHeight());
 	mainLFOFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOFrequencySlider_.setTextValueSuffix(" Main LFO frequency (Hz)"); //TODO attach a label instead
@@ -41,11 +41,11 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the main FLO width (aka depth)
 	mainLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOWidthSlider_.setRange(0.0, 0.5, 0.01);
+	mainLFOWidthSlider_.setRange(0.001, 0.05, 0.001);
 	mainLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOWidthSlider_.getTextBoxHeight());
 	mainLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
-	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width (Samples)"); //TODO attach a label instead
-	mainLFOWidthSlider_.setValue(0.0);
+	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width (seconds)"); //TODO attach a label instead
+	mainLFOWidthSlider_.setValue(0.01);
 	addAndMakeVisible(&mainLFOWidthSlider_); // TODO why does this use the address-of operator?
 	 // add the listener to the slider									  
 	mainLFOWidthSlider_.addListener(this);
