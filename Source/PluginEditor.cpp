@@ -178,6 +178,7 @@ void FarkleAudioProcessorEditor::buttonClicked(Button* button)
 
 void FarkleAudioProcessorEditor::timerCallback() {
 	currentDelaySlider_.setValue(processor.currentDelayValueDebug_);
+	mainLFOFrequencySlider_.setValue(processor.mainLFOFreq_);
 	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
 	delayReadPositionSlider_.setValue(processor.delayReadPositionDebug_);
 }

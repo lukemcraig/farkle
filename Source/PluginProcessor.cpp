@@ -109,7 +109,7 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need.
-	delayBufferLength_ = ONE_SECOND_AT_48K*5; // TODO set this more intelligently
+	delayBufferLength_ = ONE_SECOND_AT_48K; // TODO set this more intelligently
 
 	delayBuffer_.setSize(2, delayBufferLength_);	// set the buffer to 2 channels and the size of the delayBufferLength_
 	delayBuffer_.clear(); // initialize the memory to 0
@@ -160,6 +160,8 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	int dwp = 0; // local delay write position
 	float local_mainLFOPhase = 0.0;
 	float local_secondLFOPhase = 0.0;
+	float local_mainLFOFrequency = 0.0;
+
 	float currentDelay = 0.0;
 	float drp = 0.0;
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
@@ -171,6 +173,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		// copy the state of this instance variables so that the channels are independently processed
 		dwp = delayWritePosition_;
 		local_mainLFOPhase = mainLFOPhase_;
+		local_mainLFOFrequency = mainLFOFreq_;
 		local_secondLFOPhase = secondLFOPhase_;
 
 		for (int sample = 0; sample < numSamples; ++sample) {	
@@ -178,7 +181,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			// calculate the (fractional) delay in ms based on the lfo's current amplitude
 			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_mainLFOPhase)); //TODO make this more effecient
 			
-			// then the delay read position is (hypothetically) that ^ and 3 more samples behind the write position 
+			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
 			drp = fmodf((float)dwp - //TODO fmodf is to account for the circular buffer?
 				(float)(currentDelay * getSampleRate()) + (float)delayBufferLength_ - 3.0, 
 				(float)delayBufferLength_);
@@ -203,19 +206,35 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			if (++dwp >= delayBufferLength_)
 				dwp = 0; // loop back to 0 if necessary
 
-			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
-			local_mainLFOPhase += mainLFOFreq_ * inverseSampleRate_;
+			// update the second LFO's phase by the amount it should be increased per sample, at its current frequency
+			local_secondLFOPhase += secondLFOFreq_ * inverseSampleRate_;
 			// wrap it between 0.0 and 1.0
-			if (local_mainLFOPhase >= 1.0) {
+			if (local_secondLFOPhase >= 1.0) {
+				local_secondLFOPhase -= 1.0;
+			}
+			assert(local_secondLFOPhase >= 0.0);
+			assert(local_secondLFOPhase<1.0);
+
+			// update the main LFO's frequency
+			local_mainLFOFrequency = secondLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_secondLFOPhase)); //TODO make this more effecient
+			assert(local_mainLFOFrequency>=0.0);
+
+			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
+			local_mainLFOPhase += local_mainLFOFrequency * inverseSampleRate_;
+			// wrap it between 0.0 and 1.0
+			if (local_mainLFOPhase >= 1.0) { //TODO do i need a f here?
 				local_mainLFOPhase -= 1.0;
 			}
-			assert(local_mainLFOPhase>0.0 && local_mainLFOPhase<1.0);
+			assert(local_mainLFOPhase >=0.0);
+			assert(local_mainLFOPhase < 1.0);	
 		}
     }
 	// now that all channels are finished with this block, update the instance variable
 	delayWritePosition_ = dwp;
 	mainLFOPhase_ = local_mainLFOPhase;
+	mainLFOFreq_ = local_mainLFOFrequency;
 	secondLFOPhase_ = local_secondLFOPhase;
+
 	// debugging instance variables
 	currentDelayValueDebug_ = currentDelay;
 	delayReadPositionDebug_ = drp;

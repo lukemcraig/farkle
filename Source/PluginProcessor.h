@@ -56,13 +56,6 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 	//==============================================================================
-	/** Sets the main LFO frequency
-	*/
-	void setMainLFOFrequency(float newFreq);
-	/** Sets the main LFO Width in samples
-	*/
-	void setMainLFOWidth(float newWidth);
-	//==============================================================================
 	float currentDelayValueDebug_;
 	float delayReadPositionDebug_;
 	int delayWritePosition_;
