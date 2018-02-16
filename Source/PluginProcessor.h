@@ -72,6 +72,9 @@ public:
 	float mainLFOFreq_;
 	float mainLFOWidth_;
 
+	float secondLFOFreq_;
+	float secondLFOWidth_;
+
 private:
 	//==============================================================================
 	void NearestNeighborInterpolation(float drp, float * delayData, float &interpolatedSample);
@@ -81,7 +84,8 @@ private:
 	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
 	//==============================================================================
-	float lfoPhase_;
+	float mainLFOPhase_;
+	float secondLFOPhase_;
 	float inverseSampleRate_; // so we don't have to recalculate it every sample
 	//==============================================================================
 	const int ONE_SECOND_AT_48K = 48000;

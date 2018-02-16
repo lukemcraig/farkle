@@ -38,8 +38,12 @@ private:
 	Slider currentDelaySlider_;
 	Slider delayWritePositionSlider_;
 	Slider delayReadPositionSlider_;
+
 	Slider mainLFOFrequencySlider_;
 	Slider mainLFOWidthSlider_;
+
+	Slider secondLFOFrequencySlider_;
+	Slider secondLFOWidthSlider_;
 
 	TextButton  linearInterpolationButton_;
 	TextButton  nearestNeighborButton_;
