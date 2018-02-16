@@ -62,6 +62,7 @@ public:
 	void setMainLFOWidth(int newWidth);
 	//==============================================================================
 	float currentDelayValueDebug_;
+	int delayReadPositionDebug_;
 	int delayWritePosition_;
 	int delayBufferLength_;
 	//==============================================================================

@@ -33,6 +33,8 @@ private:
 	void sliderValueChanged(Slider* slider) override;
 	//==============================================================================
     FarkleAudioProcessor& processor;
+	Slider currentDelaySlider_;
+	Slider delayWritePositionSlider_;
 	Slider delayReadPositionSlider_;
 	Slider mainLFOFrequencySlider_;
 	Slider mainLFOWidthSlider_;

@@ -20,13 +20,13 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	setResizable(true, true);
 
 	// make a horizontal slider widget for the delay time
-	delayReadPositionSlider_.setSliderStyle(Slider::LinearHorizontal);	
-	delayReadPositionSlider_.setRange(0.0, 100.0, 0.1);
-	delayReadPositionSlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, delayReadPositionSlider_.getTextBoxHeight());
-	delayReadPositionSlider_.setPopupDisplayEnabled(true, false, this);
-	delayReadPositionSlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
-	delayReadPositionSlider_.setValue(0.0);
-	addAndMakeVisible(&delayReadPositionSlider_); // TODO why does this use the address-of operator?						  
+	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);	
+	currentDelaySlider_.setRange(0.0, 100.0, 0.1);
+	currentDelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, currentDelaySlider_.getTextBoxHeight());
+	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
+	currentDelaySlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
+	currentDelaySlider_.setValue(0.0);
+	addAndMakeVisible(&currentDelaySlider_); // TODO why does this use the address-of operator?						  
 	
 	// make a horizontal slider widget for the main FLO frequency
 	mainLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
@@ -50,8 +50,22 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	 // add the listener to the slider									  
 	mainLFOWidthSlider_.addListener(this);
 
+	delayWritePositionSlider_.setSliderStyle(Slider::LinearHorizontal);
+	delayWritePositionSlider_.setRange(0.0, processor.delayBufferLength_, 1.0);
+	delayWritePositionSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, delayWritePositionSlider_.getTextBoxHeight());
+	delayWritePositionSlider_.setTextValueSuffix("dwp"); //TODO attach a label instead
+	delayWritePositionSlider_.setValue(0.0);
+	addAndMakeVisible(&delayWritePositionSlider_);
+
+	delayReadPositionSlider_.setSliderStyle(Slider::LinearHorizontal);
+	delayReadPositionSlider_.setRange(0.0, processor.delayBufferLength_, 1.0);
+	delayReadPositionSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, delayReadPositionSlider_.getTextBoxHeight());
+	delayReadPositionSlider_.setTextValueSuffix("drp"); //TODO attach a label instead
+	delayReadPositionSlider_.setValue(0.0);
+	addAndMakeVisible(&delayReadPositionSlider_);
+
 	// start the timer for polling the debug values
-	startTimerHz(30);
+	startTimerHz(10);
 }
 
 FarkleAudioProcessorEditor::~FarkleAudioProcessorEditor()
@@ -72,9 +86,11 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
 void FarkleAudioProcessorEditor::resized()
 {
     // lay out the positions of any widgets
-	delayReadPositionSlider_.setBounds(40, 30, 300, 40);
-	mainLFOFrequencySlider_.setBounds(40, delayReadPositionSlider_.getBottom(), 300, 40);
+	currentDelaySlider_.setBounds(40, 30, 300, 40);
+	mainLFOFrequencySlider_.setBounds(40, currentDelaySlider_.getBottom(), 300, 40);
 	mainLFOWidthSlider_.setBounds(40, mainLFOFrequencySlider_.getBottom(), 300, 40);
+	delayWritePositionSlider_.setBounds(40, mainLFOWidthSlider_.getBottom(), 300, 40);
+	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
 }
 
 void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
@@ -88,5 +104,7 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 }
 
 void FarkleAudioProcessorEditor::timerCallback() {
-	delayReadPositionSlider_.setValue(processor.currentDelayValueDebug_);
+	currentDelaySlider_.setValue(processor.currentDelayValueDebug_);
+	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
+	delayReadPositionSlider_.setValue(processor.delayReadPositionDebug_);
 }

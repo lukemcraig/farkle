@@ -29,6 +29,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	mainLFOFreq_ = 10.0;
 	mainLFOWidth_ = 5;
 	lfoPhase_ = 0.0;
+	delayReadPositionDebug_ = 0.0;
 }
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -152,6 +153,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	int dwp = 0; // local delay write position
 	float ph = 0.0;
 	float currentDelay = 0.0;
+	float drp = 0.0;
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
 		// get the pointer to the main audio buffer
@@ -161,22 +163,22 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		// copy the state of this instance variable so that the channels are independently processed
 		dwp = delayWritePosition_;
 		ph = lfoPhase_;
-
+		
 		for (int sample = 0; sample < numSamples; ++sample) {			
 			// calculate the (fractional) delay in ms based on the lfo's current amplitude
-			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0f * PI * lfoPhase_)); //TODO make this more effecient
+			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * lfoPhase_)); //TODO make this more effecient
 			
 			// then the delay read position is (hypothetically) that ^ and 3 more samples behind the write position 
-			float drp = fmodf((float)dwp - //TODO fmodf is to account for the circular buffer?
+			drp = fmodf((float)dwp - //TODO fmodf is to account for the circular buffer?
 				(float)(currentDelay * getSampleRate()) + 
 				(float)delayBufferLength_ - 3.0, 
 				(float)delayBufferLength_);
 			// and then we need to do (linear) interpolation to calculate a sample amplitude "inbetween" integer indicies
 			// get the fractional part of the drp
 			float fraction = drp - floorf(drp);
-			// get the sample to the left of the fractional sample
+			// get the sample index to the left of the fractional sample
 			int previousSample = (int)floorf(drp);
-			// get the sample to the right of the fractional sample, accounting for the circular buffer
+			// get the sample index to the right of the fractional sample, accounting for the circular buffer
 			int nextSample = (previousSample + 1) % delayBufferLength_;
 			// calculate the "inbetween" sample amplitude by getting a weighted average of the 
 			float interpolatedSample = fraction * (float) delayData[nextSample] + (1.0f-fraction)*(float)delayData[previousSample]; //TODO polynomial interpolation	
@@ -202,8 +204,9 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	// now that all channels are finished with this block, update the instance variable
 	delayWritePosition_ = dwp;
 	lfoPhase_ = ph;
+	// debugging instance variables
 	currentDelayValueDebug_ = currentDelay;
-
+	delayReadPositionDebug_ = drp;
 	// clear garbage output channels that didn't contain input data
 	for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
