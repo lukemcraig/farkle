@@ -23,6 +23,10 @@ FarkleAudioProcessor::FarkleAudioProcessor()
                        )
 #endif
 {
+	delayReadPosition_ = 0;
+	delayWritePosition_ = 0;
+	delayTime_ = 0;
+
 }
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -98,6 +102,8 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     // initialisation that you need.
 	delayBuffer_.setSize(2, delayBufferLength_);	// set the buffer to 2 channels and the size of the delayBufferLength_
 	delayBuffer_.clear(); // initialize the memory to 0
+
+	delayBufferLength_ = FOUR_SECONDS_AT_48K; // TODO set this more intelligently
 
 	setDelayReadPosition();
 }

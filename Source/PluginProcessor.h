@@ -69,6 +69,8 @@ private:
 	void setDelayReadPosition();
 	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
+	//==============================================================================
+	const int FOUR_SECONDS_AT_48K = 192000;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessor)
 };
