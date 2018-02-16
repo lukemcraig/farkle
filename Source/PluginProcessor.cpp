@@ -95,7 +95,18 @@ void FarkleAudioProcessor::changeProgramName (int index, const String& newName)
 void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    // initialisation that you need.
+	delayBuffer_.setSize(2, delayBufferLength_);	// set the buffer to 2 channels and the size of the delayBufferLength_
+	delayBuffer_.clear(); // initialize the memory to 0
+
+	setDelayReadPosition();
+}
+
+void FarkleAudioProcessor::setDelayReadPosition()
+{
+	// the delay read position is delayTime_ samples behind delayWritePosition_ in the circular buffer
+	// (the +delayBufferLength_ keeps it positive)
+	delayReadPosition_ = (int)(delayWritePosition_ - (int)(delayTime_)+delayBufferLength_) % delayBufferLength_;
 }
 
 void FarkleAudioProcessor::releaseResources()
@@ -130,27 +141,46 @@ bool FarkleAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+	// TODO ScopedNoDenormals?
     ScopedNoDenormals noDenormals;
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
+	const int numSamples = buffer.getNumSamples();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+	int drp = 0; // delay read pointer
+	int dwp = 0; // delay write pointer
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
+		// get the pointer to the main audio buffer
         float* channelData = buffer.getWritePointer (channel);
+		// get the pointer to the delay buffer
+		float* delayData = delayBuffer_.getWritePointer(channel);
+		// copy the variables so that the channels are independently processed
+		drp = delayReadPosition_;
+		dwp = delayWritePosition_;
 
-        // ..do something to the data...
+		for (int sample = 0; sample < numSamples; ++sample) {
+			// the input sample is written to delayData at the write pointer
+			delayData[dwp] = channelData[sample];
+
+			// the output sample is read from delayData at the read pointer
+			channelData[sample] = delayData[drp];
+
+			// the read and write pointers are incremented
+			if (++dwp >= delayBufferLength_)
+				dwp = 0;
+			if (++drp >= delayBufferLength_)
+				drp = 0;
+		}
     }
+	// now that all channels are finished with this block, update the instance variables
+	delayReadPosition_ = drp;
+	delayWritePosition_ = dwp;
+
+	// clear garbage output channels that didn't contain input data
+	for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+		buffer.clear(i, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -176,6 +206,14 @@ void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInByte
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+//==============================================================================
+
+void FarkleAudioProcessor::setDelayTime(int newDelayTime)
+{
+	delayTime_ = newDelayTime;
+	setDelayReadPosition();
 }
 
 //==============================================================================

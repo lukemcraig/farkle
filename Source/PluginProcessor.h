@@ -53,8 +53,24 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+	//==============================================================================
+
+	/** Sets the delay time (in samples) and updates the delayReadPosition_ accordingly.
+		Should be called from the GUI.
+	*/
+	void setDelayTime(int newDelayTime);
+	//==============================================================================
+	double delayTime_;
+	int delayReadPosition_;
+	int delayWritePosition_;
 
 private:
+	//==============================================================================
+	void setDelayReadPosition();
+
+	//==============================================================================
+	AudioSampleBuffer delayBuffer_;
+	int delayBufferLength_;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessor)
 };
