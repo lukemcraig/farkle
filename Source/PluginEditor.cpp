@@ -36,8 +36,8 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	mainLFOBaseFrequencySlider_.setTextValueSuffix(" Main LFO Base frequency (Hz)"); //TODO attach a label instead
 	mainLFOBaseFrequencySlider_.setValue(processor.mainLFOBaseFreq_);
 	addAndMakeVisible(&mainLFOBaseFrequencySlider_); // TODO why does this use the address-of operator?
-												 // add the listener to the slider									  
-	mainLFOFrequencySlider_.addListener(this);
+	// add the listener to the slider									  
+	mainLFOBaseFrequencySlider_.addListener(this);
 	
 	// make a horizontal slider widget for the calculated main LFO frequency
 	mainLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
