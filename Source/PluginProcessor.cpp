@@ -219,8 +219,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			assert(local_secondLFOPhase<1.0);
 
 			// update the main LFO's frequency
-			local_mainLFOFrequency = local_mainLFOBaseFrequency + secondLFOWidth_ * (0.5 * sinf(2.0 * PI * local_secondLFOPhase)); //TODO make this more effecient
-			DBG(local_mainLFOBaseFrequency);
+			local_mainLFOFrequency = std::max(0.0f,local_mainLFOBaseFrequency + secondLFOWidth_ * (sinf(2.0* PI * local_secondLFOPhase))); //TODO make this more effecient
 			assert(local_mainLFOFrequency>=0.0);
 
 			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency

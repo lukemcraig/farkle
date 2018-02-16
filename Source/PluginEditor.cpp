@@ -30,7 +30,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the main LFO base frequency
 	mainLFOBaseFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOBaseFrequencySlider_.setRange(0.0, 5.0, 0.001);
+	mainLFOBaseFrequencySlider_.setRange(0.01, 5.0, 0.001);
 	mainLFOBaseFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOBaseFrequencySlider_.getTextBoxHeight());
 	mainLFOBaseFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOBaseFrequencySlider_.setTextValueSuffix(" Main LFO Base frequency (Hz)"); //TODO attach a label instead
@@ -41,7 +41,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	
 	// make a horizontal slider widget for the calculated main LFO frequency
 	mainLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOFrequencySlider_.setRange(-1.0, 5.0,0.001);
+	mainLFOFrequencySlider_.setRange(0.01, 5.0,0.001);
 	mainLFOFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOFrequencySlider_.getTextBoxHeight());
 	mainLFOFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOFrequencySlider_.setTextValueSuffix(" Main LFO frequency (Hz)"); //TODO attach a label instead
