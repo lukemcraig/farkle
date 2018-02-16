@@ -227,6 +227,8 @@ void FarkleAudioProcessor::NearestNeighborInterpolation(float drp, float * delay
 
 void FarkleAudioProcessor::LinearInterpolation(float drp, float * delayData, float &interpolatedSample)
 {
+	// x(t) = (n + 1 - t)x[n] + (t - n)x[n + 1],  n <= t < n + 1 
+
 	// get the fractional part of the drp
 	float fraction = drp - floorf(drp);
 	// get the sample index to the left of the fractional sample
@@ -235,6 +237,17 @@ void FarkleAudioProcessor::LinearInterpolation(float drp, float * delayData, flo
 	int nextSample = (previousSample + 1) % delayBufferLength_;
 	// calculate the "inbetween" sample amplitude by getting a weighted average of the 
 	interpolatedSample = fraction * delayData[nextSample] + (1.0f - fraction)*delayData[previousSample];
+}
+
+void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, float &interpolatedSample)
+{
+	// x(t) = c3(t-n)^3 + c2(t-n)^2 + c1(t-n) + c0  for n<= t < n+1
+
+	// c3 = -x[n-1]+x[n]-x[n+1]+x[n+2]
+	// c2
+
+	
+	//interpolatedSample = fraction * delayData[nextSample] + (1.0f - fraction)*delayData[previousSample];
 }
 
 //==============================================================================
