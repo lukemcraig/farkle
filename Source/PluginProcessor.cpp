@@ -39,6 +39,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	interpolationType = 1;
 
 	predelay_ = 0.0;
+	mix_ = 50.0;
 }
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -120,6 +121,7 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 	secondLFOPhase_ = 0.0;
 	inverseSampleRate_ = 1.0 / (float)sampleRate;
 
+
 }
 
 void FarkleAudioProcessor::releaseResources()
@@ -184,13 +186,13 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		for (int sample = 0; sample < numSamples; ++sample) {	
 
 			float interpolatedSample = 0.0;
-			// calculate the (fractional) delay in ms based on the lfo's current amplitude
-			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_mainLFOPhase)); //TODO make this more effecient
+			// calculate the (fractional) delay in seconds based on the lfo's current amplitude
+			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0f * PI * local_mainLFOPhase)); //TODO make this more effecient
 			currentDelay += predelay_;
 			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
-			drp = fmodf((float)dwp - //TODO fmodf is to account for the circular buffer?
-				(float)(currentDelay * getSampleRate()) + (float)delayBufferLength_ - 3.0, 
-				(float)delayBufferLength_);
+			drp = (float)dwp - (float)(currentDelay * (float)getSampleRate()) + (float)delayBufferLength_ - 3.0f;
+			// and then wrap it around the circular buffer (fmodf instead of % because it's a float)
+			drp = fmodf(drp,  (float)delayBufferLength_);
 
 			// and then we need to do interpolation to calculate a sample amplitude "inbetween" integer indicies
 			if(interpolationType==0)

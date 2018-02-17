@@ -51,6 +51,8 @@ private:
 
 	Slider predelaySlider_;
 
+	Slider mixSlider_;
+
 	TextButton  linearInterpolationButton_;
 	TextButton  nearestNeighborButton_;
 	TextButton  secondOrderInterpolationButton_;
