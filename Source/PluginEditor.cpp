@@ -165,7 +165,7 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 	// if the slider pointer is pointing at the memory address where mainLFOFrequencySlider_ is stored, 
 	if (slider == &mainLFOBaseFrequencySlider_) {
 		processor.mainLFOBaseFreq_ = mainLFOBaseFrequencySlider_.getValue();
-		secondLFOWidthSlider_.setMaxValue(processor.mainLFOBaseFreq_-FLT_EPSILON);
+		secondLFOWidthSlider_.setMaxValue(processor.mainLFOBaseFreq_, sendNotificationAsync,true);
 	}
 
 	if (slider == &mainLFOWidthSlider_)
