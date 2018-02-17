@@ -15,7 +15,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     // set the gui's window size
-    setSize (400, 400);
+    setSize (400, 500);
 	// make the gui's window resizeable
 	setResizable(true, true);
 
@@ -141,21 +141,21 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
 
 void FarkleAudioProcessorEditor::resized()
 {
-    // lay out the positions of any widgets
+    // lay out the positions of the widgets
+	// visualizations
 	currentDelaySlider_.setBounds(40, 30, 300, 40);
-	mainLFOBaseFrequencySlider_.setBounds(40, currentDelaySlider_.getBottom(), 300, 40);
-
-	mainLFOFrequencySlider_.setBounds(40, mainLFOBaseFrequencySlider_.getBottom(), 300, 40);
-	mainLFOWidthSlider_.setBounds(40, mainLFOFrequencySlider_.getBottom(), 300, 40);
+	delayWritePositionSlider_.setBounds(40, currentDelaySlider_.getBottom(), 300, 40);
+	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
+	mainLFOFrequencySlider_.setBounds(40, delayReadPositionSlider_.getBottom(), 300, 40);
+	// user parameters
+	mainLFOBaseFrequencySlider_.setBounds(40, mainLFOFrequencySlider_.getBottom()+20, 300, 40);
+	mainLFOWidthSlider_.setBounds(40, mainLFOBaseFrequencySlider_.getBottom(), 300, 40);
 
 	secondLFOFrequencySlider_.setBounds(40, mainLFOWidthSlider_.getBottom(), 300, 40);
-	secondLFOWidthSlider_.setBounds(40, secondLFOFrequencySlider_.getBottom(), 300, 40);
-
-	delayWritePositionSlider_.setBounds(40, secondLFOWidthSlider_.getBottom(), 300, 40);
-	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
-	
-	nearestNeighborButton_.setBounds(40, delayReadPositionSlider_.getBottom(), 100, 40);
-	linearInterpolationButton_.setBounds(nearestNeighborButton_.getRight(), delayReadPositionSlider_.getBottom(), 100, 40);
+	secondLFOWidthSlider_.setBounds(40, secondLFOFrequencySlider_.getBottom(), 300, 40);	
+	// interpolation buttons
+	nearestNeighborButton_.setBounds(40, secondLFOWidthSlider_.getBottom(), 100, 40);
+	linearInterpolationButton_.setBounds(nearestNeighborButton_.getRight(), secondLFOWidthSlider_.getBottom(), 100, 40);
 	secondOrderInterpolationButton_.setBounds(40, linearInterpolationButton_.getBottom(), 100, 40);
 	cubicInterpolationButton.setBounds(secondOrderInterpolationButton_.getRight(), linearInterpolationButton_.getBottom(), 100, 40);
 }
