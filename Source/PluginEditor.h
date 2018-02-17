@@ -35,6 +35,9 @@ private:
 	void buttonClicked(Button* button) override;
 	//==============================================================================
     FarkleAudioProcessor& processor;
+
+	LookAndFeel_V4 nonEditableLook;
+
 	Slider currentDelaySlider_;
 	Slider delayWritePositionSlider_;
 	Slider delayReadPositionSlider_;

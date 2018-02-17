@@ -19,6 +19,8 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	// make the gui's window resizeable
 	setResizable(true, true);
 
+	nonEditableLook.setColour(Slider::thumbColourId, Colours::black);
+
 	// make a horizontal slider widget for the delay time
 	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);	
 	currentDelaySlider_.setRange(-0.5, 0.5, 0.0001);
@@ -26,7 +28,8 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
 	currentDelaySlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
 	currentDelaySlider_.setValue(0.0);
-	addAndMakeVisible(&currentDelaySlider_); // TODO why does this use the address-of operator?		
+	currentDelaySlider_.setLookAndFeel(&nonEditableLook); // TODO why does this need the address-of operator?		
+	addAndMakeVisible(&currentDelaySlider_); 
 
 	// make a horizontal slider widget for the main LFO base frequency
 	mainLFOBaseFrequencySlider_.setSliderStyle(Slider::ThreeValueHorizontal);
@@ -48,6 +51,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	mainLFOFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOFrequencySlider_.setTextValueSuffix(" Main LFO frequency (Hz)"); //TODO attach a label instead
 	mainLFOFrequencySlider_.setValue(processor.mainLFOFreq_);
+	mainLFOFrequencySlider_.setLookAndFeel(&nonEditableLook);
 	addAndMakeVisible(&mainLFOFrequencySlider_); 
 
 
@@ -91,6 +95,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	delayWritePositionSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, delayWritePositionSlider_.getTextBoxHeight());
 	delayWritePositionSlider_.setTextValueSuffix("dwp"); //TODO attach a label instead
 	delayWritePositionSlider_.setValue(0.0);
+	delayWritePositionSlider_.setLookAndFeel(&nonEditableLook);
 	addAndMakeVisible(&delayWritePositionSlider_);
 
 	delayReadPositionSlider_.setSliderStyle(Slider::LinearHorizontal);
@@ -98,6 +103,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	delayReadPositionSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, delayReadPositionSlider_.getTextBoxHeight());
 	delayReadPositionSlider_.setTextValueSuffix("drp"); //TODO attach a label instead
 	delayReadPositionSlider_.setValue(0.0);
+	delayReadPositionSlider_.setLookAndFeel(&nonEditableLook);
 	addAndMakeVisible(&delayReadPositionSlider_);
 
 	nearestNeighborButton_.setButtonText("Nearest Neighbor");
