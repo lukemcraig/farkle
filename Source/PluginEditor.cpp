@@ -21,7 +21,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the delay time
 	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);	
-	currentDelaySlider_.setRange(-0.5, 0.5, 0.001);
+	currentDelaySlider_.setRange(-0.5, 0.5, 0.0001);
 	currentDelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, currentDelaySlider_.getTextBoxHeight());
 	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
 	currentDelaySlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
@@ -165,7 +165,7 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 	// if the slider pointer is pointing at the memory address where mainLFOFrequencySlider_ is stored, 
 	if (slider == &mainLFOBaseFrequencySlider_) {
 		processor.mainLFOBaseFreq_ = mainLFOBaseFrequencySlider_.getValue();
-		secondLFOWidthSlider_.setMaxValue(processor.mainLFOBaseFreq_, sendNotificationAsync,true);
+		secondLFOWidthSlider_.setMaxValue(processor.mainLFOBaseFreq_, dontSendNotification, true);
 	}
 
 	if (slider == &mainLFOWidthSlider_)
@@ -174,8 +174,10 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 	if (slider == &secondLFOFrequencySlider_)
 		processor.secondLFOFreq_ = secondLFOFrequencySlider_.getValue();
 
-	if (slider == &secondLFOWidthSlider_)
+	if (slider == &secondLFOWidthSlider_) {
 		processor.secondLFOWidth_ = secondLFOWidthSlider_.getValue();
+		mainLFOBaseFrequencySlider_.setMinValue(processor.secondLFOWidth_, dontSendNotification, true);
+	}
 }
 
 void FarkleAudioProcessorEditor::buttonClicked(Button* button)
