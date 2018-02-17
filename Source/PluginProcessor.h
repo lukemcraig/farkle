@@ -69,7 +69,7 @@ public:
 
 	float secondLFOFreq_;
 	float secondLFOWidth_;
-
+	const double PI = 3.14159265358979323846;
 private:
 	//==============================================================================
 	void NearestNeighborInterpolation(float drp, float * delayData, float &interpolatedSample);
@@ -84,7 +84,7 @@ private:
 	float inverseSampleRate_; // so we don't have to recalculate it every sample
 	//==============================================================================
 	const int ONE_SECOND_AT_48K = 48000;
-	const double PI = 3.14159265358979323846;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessor)
 };

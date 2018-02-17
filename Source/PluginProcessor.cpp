@@ -180,6 +180,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		local_secondLFOPhase = secondLFOPhase_;
 
 		for (int sample = 0; sample < numSamples; ++sample) {	
+
 			float interpolatedSample = 0.0;
 			// calculate the (fractional) delay in ms based on the lfo's current amplitude
 			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_mainLFOPhase)); //TODO make this more effecient
@@ -219,7 +220,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			assert(local_secondLFOPhase<1.0);
 
 			// update the main LFO's frequency
-			local_mainLFOFrequency = std::max(0.0f,local_mainLFOBaseFrequency + secondLFOWidth_ * (sinf(2.0* PI * local_secondLFOPhase))); //TODO make this more effecient
+			local_mainLFOFrequency = local_mainLFOBaseFrequency + secondLFOWidth_ * (sinf(2.0* PI * local_secondLFOPhase) ); //TODO make this more effecient
 			assert(local_mainLFOFrequency>=0.0);
 
 			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
