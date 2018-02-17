@@ -49,6 +49,8 @@ private:
 	Slider secondLFOFrequencySlider_;
 	Slider secondLFOWidthSlider_;
 
+	Slider predelaySlider_;
+
 	TextButton  linearInterpolationButton_;
 	TextButton  nearestNeighborButton_;
 	TextButton  secondOrderInterpolationButton_;

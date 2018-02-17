@@ -37,6 +37,8 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 
 	delayReadPositionDebug_ = 0.0;
 	interpolationType = 1;
+
+	predelay_ = 0.0;
 }
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -184,7 +186,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			float interpolatedSample = 0.0;
 			// calculate the (fractional) delay in ms based on the lfo's current amplitude
 			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_mainLFOPhase)); //TODO make this more effecient
-			
+			currentDelay += predelay_;
 			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
 			drp = fmodf((float)dwp - //TODO fmodf is to account for the circular buffer?
 				(float)(currentDelay * getSampleRate()) + (float)delayBufferLength_ - 3.0, 

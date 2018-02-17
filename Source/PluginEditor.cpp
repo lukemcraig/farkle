@@ -23,7 +23,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the delay time
 	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);	
-	currentDelaySlider_.setRange(-0.5, 0.5, 0.0001);
+	currentDelaySlider_.setRange(0.0, 1.0, 0.0001);
 	currentDelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, currentDelaySlider_.getTextBoxHeight());
 	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
 	currentDelaySlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
@@ -57,7 +57,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	// make a horizontal slider widget for the main LFO width (aka depth)
 	mainLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOWidthSlider_.setRange(0.001, 0.1, 0.001);
+	mainLFOWidthSlider_.setRange(0.001, 1.0, 0.001);
 	mainLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOWidthSlider_.getTextBoxHeight());
 	mainLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width "); //TODO attach a label instead
@@ -89,6 +89,19 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	addAndMakeVisible(&secondLFOWidthSlider_); 
 	// add the listener to the slider									  
 	secondLFOWidthSlider_.addListener(this);
+
+	// make a horizontal slider widget for the predelay
+	predelaySlider_.setSliderStyle(Slider::ThreeValueHorizontal);
+	predelaySlider_.setRange(0.000, 1.0, 0.001);
+	predelaySlider_.setMinValue(0.0);
+	predelaySlider_.setMaxValue(1.0);
+	predelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, predelaySlider_.getTextBoxHeight());
+	predelaySlider_.setPopupDisplayEnabled(true, false, this);
+	predelaySlider_.setTextValueSuffix(" Predelay (sec)"); //TODO attach a label instead
+	predelaySlider_.setValue(0);
+	addAndMakeVisible(&predelaySlider_);
+	// add the listener to the slider									  
+	predelaySlider_.addListener(this);
 
 	delayWritePositionSlider_.setSliderStyle(Slider::LinearHorizontal);
 	delayWritePositionSlider_.setRange(0.0, processor.delayBufferLength_, 1.0);
@@ -127,7 +140,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	addAndMakeVisible(cubicInterpolationButton);
 
 	// start the timer for polling the debug values
-	startTimerHz(10);
+	startTimerHz(50);
 }
 
 FarkleAudioProcessorEditor::~FarkleAudioProcessorEditor()
@@ -159,11 +172,12 @@ void FarkleAudioProcessorEditor::resized()
 
 	secondLFOFrequencySlider_.setBounds(40, mainLFOWidthSlider_.getBottom(), 300, 40);
 	secondLFOWidthSlider_.setBounds(40, secondLFOFrequencySlider_.getBottom(), 300, 40);	
+	predelaySlider_.setBounds(40, secondLFOWidthSlider_.getBottom(), 300, 40);
 	// interpolation buttons
-	nearestNeighborButton_.setBounds(40, secondLFOWidthSlider_.getBottom(), 100, 40);
-	linearInterpolationButton_.setBounds(nearestNeighborButton_.getRight(), secondLFOWidthSlider_.getBottom(), 100, 40);
-	secondOrderInterpolationButton_.setBounds(40, linearInterpolationButton_.getBottom(), 100, 40);
-	cubicInterpolationButton.setBounds(secondOrderInterpolationButton_.getRight(), linearInterpolationButton_.getBottom(), 100, 40);
+	nearestNeighborButton_.setBounds(40, predelaySlider_.getBottom(), 150, 30);
+	linearInterpolationButton_.setBounds(nearestNeighborButton_.getRight(), predelaySlider_.getBottom(), 150, 30);
+	secondOrderInterpolationButton_.setBounds(40, linearInterpolationButton_.getBottom(), 150, 30);
+	cubicInterpolationButton.setBounds(secondOrderInterpolationButton_.getRight(), linearInterpolationButton_.getBottom(), 150, 30);
 }
 
 void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
@@ -183,6 +197,10 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 	if (slider == &secondLFOWidthSlider_) {
 		processor.secondLFOWidth_ = secondLFOWidthSlider_.getValue();
 		mainLFOBaseFrequencySlider_.setMinValue(processor.secondLFOWidth_, dontSendNotification, true);
+	}
+
+	if (slider == &predelaySlider_) {
+		processor.predelay_ = predelaySlider_.getValue();
 	}
 }
 

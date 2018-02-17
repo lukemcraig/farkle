@@ -29,9 +29,7 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
-
-	
+    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;	
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
@@ -69,7 +67,9 @@ public:
 
 	float secondLFOFreq_;
 	float secondLFOWidth_;
-	const double PI = 3.14159265358979323846;
+
+	float predelay_;
+
 private:
 	//==============================================================================
 	void NearestNeighborInterpolation(float drp, float * delayData, float &interpolatedSample);
@@ -82,6 +82,7 @@ private:
 	float mainLFOPhase_;
 	float secondLFOPhase_;
 	float inverseSampleRate_; // so we don't have to recalculate it every sample
+	const double PI = 3.14159265358979323846;
 	//==============================================================================
 	const int ONE_SECOND_AT_48K = 48000;
 
