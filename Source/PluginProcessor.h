@@ -84,6 +84,13 @@ private:
 	float secondLFOPhase_;
 	//==============================================================================
 	const int ONE_SECOND_AT_48K = 48000;
+	const String PID_INTERPOLATION = "interptype";
+	const String PID_SECONDLFOWIDTH = "secondlfowidth";
+	const String PID_MAINLFOWIDTH = "mainlfowidth";
+	const String PID_SECONDLFOFREQ = "secondlfofreq";
+	const String PID_MAINLFOCENTERFREQ = "mainlfocenterfreq";
+	const String PID_MIX = "mix";
+	const String PID_PREDELAY = "predelay";
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessor)

@@ -31,43 +31,43 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	mainLFOPhase_ = 0.0;
 	secondLFOPhase_ = 0.0;
 
-	addParameter(mainLFOBaseFreq_ = new AudioParameterFloat("mainlfocenterfreq", // parameter ID
+	addParameter(mainLFOBaseFreq_ = new AudioParameterFloat(PID_MAINLFOCENTERFREQ, // parameter ID
 		"Main LFO Center Frequency", // paramter Name
 		0.0f,  // minimum value
 		5.0f, // maximum value
 		1.92f)); // default value
 
-	addParameter(mainLFOWidth_ = new AudioParameterFloat("mainlfowidth", // parameter ID
+	addParameter(mainLFOWidth_ = new AudioParameterFloat(PID_MAINLFOWIDTH, // parameter ID
 		"Main LFO Width", // paramter Name
 		0.0f,  // minimum value
 		1.0f, // maximum value
 		0.02f)); // default value
 
-	addParameter(secondLFOFreq_ = new AudioParameterFloat("secondlfofreq", // parameter ID
+	addParameter(secondLFOFreq_ = new AudioParameterFloat(PID_SECONDLFOFREQ, // parameter ID
 		"2nd LFO Frequency", // paramter Name
 		0.0f,  // minimum value
 		5.0f, // maximum value
 		0.958f)); // default value
 
-	addParameter(secondLFOWidth_ = new AudioParameterFloat("secondlfowidth", // parameter ID
+	addParameter(secondLFOWidth_ = new AudioParameterFloat(PID_SECONDLFOWIDTH, // parameter ID
 		"2nd LFO Width", // paramter Name
 		0.0f,  // minimum value
 		1.0f, // maximum value
 		0.685f)); // default value
 
-	addParameter(interpolationType_ = new AudioParameterInt("interptype", // parameter ID
+	addParameter(interpolationType_ = new AudioParameterInt(PID_INTERPOLATION, // parameter ID
 		"Interpolation Type", // paramter Name
 		0,  // minimum value
 		3, // maximum value
 		1)); // default value
 
-	addParameter(mix_ = new AudioParameterFloat("mix", // parameter ID
+	addParameter(mix_ = new AudioParameterFloat(PID_MIX, // parameter ID
 													"Mix", // paramter Name
 													0.0f,  // minimum value
 													1.0f, // maximum value
 													0.5f)); // default value
 
-	addParameter(predelay_ = new AudioParameterFloat("predelay", // parameter ID
+	addParameter(predelay_ = new AudioParameterFloat(PID_PREDELAY, // parameter ID
 		"Predelay", // paramter Name
 		0.0f,  // minimum value
 		3.0f, // maximum value
@@ -394,28 +394,38 @@ void FarkleAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-	MemoryOutputStream(destData, true).writeInt(*interpolationType_);
-	MemoryOutputStream(destData, true).writeFloat(*mainLFOBaseFreq_);
-	MemoryOutputStream(destData, true).writeFloat(*mainLFOWidth_);
-	MemoryOutputStream(destData, true).writeFloat(*secondLFOFreq_);
-	MemoryOutputStream(destData, true).writeFloat(*secondLFOWidth_);
-	MemoryOutputStream(destData, true).writeFloat(*mix_);
-	MemoryOutputStream(destData, true).writeFloat(*predelay_);
-
+	ScopedPointer<XmlElement> xml(new XmlElement("Paramters")); //TODO ScopedPointer?
+	xml->setAttribute(PID_INTERPOLATION, *interpolationType_);
+	xml->setAttribute(PID_MAINLFOCENTERFREQ, (double)*mainLFOBaseFreq_);
+	xml->setAttribute(PID_MAINLFOWIDTH, (double)*mainLFOWidth_);
+	xml->setAttribute(PID_SECONDLFOFREQ, (double)*secondLFOFreq_);
+	xml->setAttribute(PID_SECONDLFOWIDTH, (double)*secondLFOWidth_);
+	xml->setAttribute(PID_MIX, (double)*mix_);
+	xml->setAttribute(PID_PREDELAY, (double)*predelay_);
+	copyXmlToBinary(*xml, destData);
 }
 
 void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-	*interpolationType_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readInt();
-	*mainLFOBaseFreq_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*mainLFOWidth_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*secondLFOFreq_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*secondLFOWidth_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();	
-	*mix_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*predelay_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-
+	ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data,sizeInBytes));
+	if (xmlState != nullptr) {
+		if (xmlState->hasTagName(PID_INTERPOLATION))
+			*interpolationType_ = xmlState->getIntAttribute(PID_INTERPOLATION);
+		if (xmlState->hasTagName(PID_MAINLFOCENTERFREQ))
+			*mainLFOBaseFreq_ = xmlState->getDoubleAttribute(PID_MAINLFOCENTERFREQ);
+		if (xmlState->hasTagName(PID_MAINLFOWIDTH))
+			*mainLFOWidth_ = xmlState->getDoubleAttribute(PID_MAINLFOWIDTH);
+		if (xmlState->hasTagName(PID_SECONDLFOFREQ))
+			*secondLFOFreq_ = xmlState->getDoubleAttribute(PID_SECONDLFOFREQ);
+		if (xmlState->hasTagName(PID_SECONDLFOWIDTH))
+			*secondLFOWidth_ = xmlState->getDoubleAttribute(PID_SECONDLFOWIDTH);
+		if (xmlState->hasTagName(PID_MIX))
+			*mix_ = xmlState->getDoubleAttribute(PID_MIX);
+		if (xmlState->hasTagName(PID_PREDELAY))
+			*predelay_ = xmlState->getDoubleAttribute(PID_PREDELAY);
+	}
 }
 
 //==============================================================================
