@@ -93,7 +93,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mainLFOBaseFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOBaseFrequencySlider_.getTextBoxHeight());
 	mainLFOBaseFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOBaseFrequencySlider_.setTextValueSuffix(" Main LFO Base frequency (Hz)"); //TODO attach a label instead
-	mainLFOBaseFrequencySlider_.setValue(processor.mainLFOBaseFreq_);
+	mainLFOBaseFrequencySlider_.setValue(*processor.mainLFOBaseFreq_);
 	addAndMakeVisible(&mainLFOBaseFrequencySlider_);
 	// add the listener to the slider									  
 	mainLFOBaseFrequencySlider_.addListener(this);
@@ -104,7 +104,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mainLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOWidthSlider_.getTextBoxHeight());
 	mainLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width "); //TODO attach a label instead
-	mainLFOWidthSlider_.setValue(processor.mainLFOWidth_);
+	mainLFOWidthSlider_.setValue(*processor.mainLFOWidth_);
 	addAndMakeVisible(&mainLFOWidthSlider_);
 	// add the listener to the slider									  
 	mainLFOWidthSlider_.addListener(this);
@@ -115,7 +115,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	secondLFOFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, secondLFOFrequencySlider_.getTextBoxHeight());
 	secondLFOFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	secondLFOFrequencySlider_.setTextValueSuffix(" Second LFO frequency (Hz)"); //TODO attach a label instead
-	secondLFOFrequencySlider_.setValue(processor.secondLFOFreq_);
+	secondLFOFrequencySlider_.setValue(*processor.secondLFOFreq_);
 	addAndMakeVisible(&secondLFOFrequencySlider_);
 	// add the listener to the slider									  
 	secondLFOFrequencySlider_.addListener(this);
@@ -128,7 +128,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	secondLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, secondLFOWidthSlider_.getTextBoxHeight());
 	secondLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	secondLFOWidthSlider_.setTextValueSuffix(" Second LFO Width "); //TODO attach a label instead
-	secondLFOWidthSlider_.setValue(processor.secondLFOWidth_);
+	secondLFOWidthSlider_.setValue(*processor.secondLFOWidth_);
 	addAndMakeVisible(&secondLFOWidthSlider_);
 	// add the listener to the slider									  
 	secondLFOWidthSlider_.addListener(this);
@@ -219,19 +219,19 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 {
 	// if the slider pointer is pointing at the memory address where mainLFOFrequencySlider_ is stored, 
 	if (slider == &mainLFOBaseFrequencySlider_) {
-		processor.mainLFOBaseFreq_ = mainLFOBaseFrequencySlider_.getValue();
-		secondLFOWidthSlider_.setMaxValue(processor.mainLFOBaseFreq_, dontSendNotification, true);
+		*processor.mainLFOBaseFreq_ = mainLFOBaseFrequencySlider_.getValue();
+		secondLFOWidthSlider_.setMaxValue(*processor.mainLFOBaseFreq_, dontSendNotification, true);
 	}
 
 	if (slider == &mainLFOWidthSlider_)
-		processor.mainLFOWidth_ = mainLFOWidthSlider_.getValue();
+		*processor.mainLFOWidth_ = mainLFOWidthSlider_.getValue();
 
 	if (slider == &secondLFOFrequencySlider_)
-		processor.secondLFOFreq_ = secondLFOFrequencySlider_.getValue();
+		*processor.secondLFOFreq_ = secondLFOFrequencySlider_.getValue();
 
 	if (slider == &secondLFOWidthSlider_) {
-		processor.secondLFOWidth_ = secondLFOWidthSlider_.getValue();
-		mainLFOBaseFrequencySlider_.setMinValue(processor.secondLFOWidth_, dontSendNotification, true);
+		*processor.secondLFOWidth_ = secondLFOWidthSlider_.getValue();
+		mainLFOBaseFrequencySlider_.setMinValue(*processor.secondLFOWidth_, dontSendNotification, true);
 	}
 	if (slider == &predelaySlider_) {
 		*processor.predelay_ = predelaySlider_.getValue();

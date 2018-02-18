@@ -28,14 +28,32 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	delayReadPositionDebug_ = 0.0;
 	currentDelayValueDebug_ = 0.0;
 	mainLFOFreq_ = 0.0;
-
-	mainLFOBaseFreq_ = 1.92;
-	mainLFOWidth_ = 0.02;
 	mainLFOPhase_ = 0.0;
-
-	secondLFOFreq_ = 0.958;
-	secondLFOWidth_ = 0.685;
 	secondLFOPhase_ = 0.0;
+
+	addParameter(mainLFOBaseFreq_ = new AudioParameterFloat("mainlfocenterfreq", // parameter ID
+		"Main LFO Center Frequency", // paramter Name
+		0.0f,  // minimum value
+		5.0f, // maximum value
+		1.92f)); // default value
+
+	addParameter(mainLFOWidth_ = new AudioParameterFloat("mainlfowidth", // parameter ID
+		"Main LFO Width", // paramter Name
+		0.0f,  // minimum value
+		1.0f, // maximum value
+		0.02f)); // default value
+
+	addParameter(secondLFOFreq_ = new AudioParameterFloat("secondlfofreq", // parameter ID
+		"2nd LFO Frequency", // paramter Name
+		0.0f,  // minimum value
+		5.0f, // maximum value
+		0.958f)); // default value
+
+	addParameter(secondLFOWidth_ = new AudioParameterFloat("secondlfowidth", // parameter ID
+		"2nd LFO Width", // paramter Name
+		0.0f,  // minimum value
+		1.0f, // maximum value
+		0.685f)); // default value
 
 	addParameter(interpolationType_ = new AudioParameterInt("interptype", // parameter ID
 		"Interpolation Type", // paramter Name
@@ -177,8 +195,11 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	int dwp = 0; // local delay write position
 	float local_mainLFOPhase = 0.0;
 	float local_secondLFOPhase = 0.0;
+	float local_secondLFOWidth = 0.0;
 	float local_mainLFOFrequency = 0.0;
 	float local_mainLFOBaseFrequency = 0.0;
+	float local_secondLFOFrequency = 0.0;
+	float local_mainLFOWidth = 0.0;
 	float currentDelay = 0.0;
 	float local_predelay = 0.0;
 	float local_mix = 0.0;
@@ -191,19 +212,24 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		// get the pointer to the delay buffer
 		float* delayData = delayBuffer_.getWritePointer(channel);
 		// copy the state of this instance variables so that the channels are independently processed
-		dwp = delayWritePosition_;
-		local_mainLFOPhase = mainLFOPhase_;
-		local_mainLFOFrequency = mainLFOFreq_;
-		local_mainLFOBaseFrequency = mainLFOBaseFreq_;
-		local_secondLFOPhase = secondLFOPhase_;
+		local_mainLFOBaseFrequency = *mainLFOBaseFreq_;
+		local_secondLFOFrequency = *secondLFOFreq_;
+		local_mainLFOWidth = *mainLFOWidth_;
+		local_secondLFOWidth = *secondLFOWidth_;
 		local_predelay = *predelay_;
 		local_mix = *mix_;
 		one_minus_mix = 1.0f - *mix_;
+
+		dwp = delayWritePosition_;
+		local_mainLFOPhase = mainLFOPhase_;
+		local_secondLFOPhase = secondLFOPhase_;
+		local_mainLFOFrequency = mainLFOFreq_;
+
 		for (int sample = 0; sample < numSamples; ++sample) {	
 
 			float interpolatedSample = 0.0;
 			// calculate the (fractional) delay in seconds based on the lfo's current amplitude
-			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * float_Pi * local_mainLFOPhase)); //TODO make this more effecient
+			currentDelay = local_mainLFOWidth * (0.5f + 0.5f * sinf(2.0 * float_Pi * local_mainLFOPhase)); //TODO make this more effecient
 			currentDelay += local_predelay;
 			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
 			drp = (float)dwp - (float)(currentDelay) * (float)getSampleRate() + (float)delayBufferLength_ - 3.0;
@@ -233,7 +259,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 				dwp = 0; // loop back to 0 if necessary
 
 			// update the second LFO's phase by the amount it should be increased per sample, at its current frequency
-			local_secondLFOPhase += secondLFOFreq_ * inverseSampleRate_;
+			local_secondLFOPhase += local_secondLFOFrequency * inverseSampleRate_;
 			// wrap it between 0.0 and 1.0
 			if (local_secondLFOPhase >= 1.0) {
 				local_secondLFOPhase -= 1.0;
@@ -242,7 +268,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			assert(local_secondLFOPhase<1.0);
 
 			// update the main LFO's frequency
-			local_mainLFOFrequency = local_mainLFOBaseFrequency + secondLFOWidth_ * (sinf(2.0* float_Pi * local_secondLFOPhase) ); //TODO make this more effecient
+			local_mainLFOFrequency = local_mainLFOBaseFrequency + local_secondLFOWidth * (sinf(2.0* float_Pi * local_secondLFOPhase) ); //TODO make this more effecient
 			assert(local_mainLFOFrequency>=0.0);
 
 			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
@@ -368,18 +394,28 @@ void FarkleAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+	MemoryOutputStream(destData, true).writeInt(*interpolationType_);
+	MemoryOutputStream(destData, true).writeFloat(*mainLFOBaseFreq_);
+	MemoryOutputStream(destData, true).writeFloat(*mainLFOWidth_);
+	MemoryOutputStream(destData, true).writeFloat(*secondLFOFreq_);
+	MemoryOutputStream(destData, true).writeFloat(*secondLFOWidth_);
 	MemoryOutputStream(destData, true).writeFloat(*mix_);
 	MemoryOutputStream(destData, true).writeFloat(*predelay_);
-	MemoryOutputStream(destData, true).writeInt(*interpolationType_);
+
 }
 
 void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+	*interpolationType_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readInt();
+	*mainLFOBaseFreq_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*mainLFOWidth_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*secondLFOFreq_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*secondLFOWidth_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();	
 	*mix_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
 	*predelay_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*interpolationType_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readInt();
+
 }
 
 //==============================================================================

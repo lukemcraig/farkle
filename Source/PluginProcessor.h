@@ -58,20 +58,16 @@ public:
 	float delayReadPositionDebug_;
 	int delayWritePosition_;
 	int delayBufferLength_;
-	AudioParameterInt* interpolationType_;
-	//==============================================================================
-	float mainLFOBaseFreq_;
-
 	float mainLFOFreq_;
-	float mainLFOWidth_;
-
-	float secondLFOFreq_;
-	float secondLFOWidth_;
-
+	float inverseSampleRate_; // so we don't have to recalculate it every sample
+	//==============================================================================
+	AudioParameterInt* interpolationType_;
+	AudioParameterFloat* mainLFOBaseFreq_;
+	AudioParameterFloat* mainLFOWidth_;
+	AudioParameterFloat* secondLFOFreq_;
+	AudioParameterFloat* secondLFOWidth_;
 	AudioParameterFloat* predelay_;
 	AudioParameterFloat* mix_;
-
-	float inverseSampleRate_; // so we don't have to recalculate it every sample
 
 private:
 	//==============================================================================
