@@ -65,7 +65,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 													"Mix", // paramter Name
 													0.0f,  // minimum value
 													1.0f, // maximum value
-													0.5f)); // default value
+													0.75f)); // default value
 
 	addParameter(predelay_ = new AudioParameterFloat(PID_PREDELAY, // parameter ID
 		"Predelay", // paramter Name
@@ -411,20 +411,22 @@ void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInByte
     // whose contents will have been created by the getStateInformation() call.
 	ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data,sizeInBytes));
 	if (xmlState != nullptr) {
-		if (xmlState->hasTagName(PID_INTERPOLATION))
-			*interpolationType_ = xmlState->getIntAttribute(PID_INTERPOLATION);
-		if (xmlState->hasTagName(PID_MAINLFOCENTERFREQ))
-			*mainLFOBaseFreq_ = xmlState->getDoubleAttribute(PID_MAINLFOCENTERFREQ);
-		if (xmlState->hasTagName(PID_MAINLFOWIDTH))
-			*mainLFOWidth_ = xmlState->getDoubleAttribute(PID_MAINLFOWIDTH);
-		if (xmlState->hasTagName(PID_SECONDLFOFREQ))
-			*secondLFOFreq_ = xmlState->getDoubleAttribute(PID_SECONDLFOFREQ);
-		if (xmlState->hasTagName(PID_SECONDLFOWIDTH))
-			*secondLFOWidth_ = xmlState->getDoubleAttribute(PID_SECONDLFOWIDTH);
-		if (xmlState->hasTagName(PID_MIX))
-			*mix_ = xmlState->getDoubleAttribute(PID_MIX);
-		if (xmlState->hasTagName(PID_PREDELAY))
-			*predelay_ = xmlState->getDoubleAttribute(PID_PREDELAY);
+		if (xmlState->hasTagName("Parameters")) {
+			if (xmlState->hasAttribute(PID_INTERPOLATION))
+				*interpolationType_ = xmlState->getIntAttribute(PID_INTERPOLATION);
+			if (xmlState->hasAttribute(PID_MAINLFOCENTERFREQ))
+				*mainLFOBaseFreq_ = xmlState->getDoubleAttribute(PID_MAINLFOCENTERFREQ);
+			if (xmlState->hasAttribute(PID_MAINLFOWIDTH))
+				*mainLFOWidth_ = xmlState->getDoubleAttribute(PID_MAINLFOWIDTH);
+			if (xmlState->hasAttribute(PID_SECONDLFOFREQ))
+				*secondLFOFreq_ = xmlState->getDoubleAttribute(PID_SECONDLFOFREQ);
+			if (xmlState->hasAttribute(PID_SECONDLFOWIDTH))
+				*secondLFOWidth_ = xmlState->getDoubleAttribute(PID_SECONDLFOWIDTH);
+			if (xmlState->hasAttribute(PID_MIX))
+				*mix_ = xmlState->getDoubleAttribute(PID_MIX);
+			if (xmlState->hasAttribute(PID_PREDELAY))
+				*predelay_ = xmlState->getDoubleAttribute(PID_PREDELAY);
+		}
 	}
 }
 
