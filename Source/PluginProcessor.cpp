@@ -208,7 +208,8 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			delayData[dwp] = channelData[sample];			
 
 			// the output sample is the interpolatedSample
-			channelData[sample] = (interpolatedSample*mix_) + (channelData[sample]*(1.0-mix_));
+			float out  = (interpolatedSample*mix_) + (channelData[sample] * (1.0f - mix_));
+			channelData[sample] = out;
 			//channelData[sample] = interpolatedSample;
 
 			// the write pointer increments exactly one sample
