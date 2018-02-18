@@ -141,7 +141,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	predelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, predelaySlider_.getTextBoxHeight());
 	predelaySlider_.setPopupDisplayEnabled(true, false, this);
 	predelaySlider_.setTextValueSuffix(" Predelay (sec)"); //TODO attach a label instead
-	predelaySlider_.setValue(processor.predelay_);
+	predelaySlider_.setValue(*processor.predelay_);
 	addAndMakeVisible(&predelaySlider_);
 	// add the listener to the slider									  
 	predelaySlider_.addListener(this);
@@ -234,7 +234,7 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 		mainLFOBaseFrequencySlider_.setMinValue(processor.secondLFOWidth_, dontSendNotification, true);
 	}
 	if (slider == &predelaySlider_) {
-		processor.predelay_ = predelaySlider_.getValue();
+		*processor.predelay_ = predelaySlider_.getValue();
 	}
 	if (slider == &mixSlider_) {
 		*processor.mix_ = mixSlider_.getValue();
@@ -244,16 +244,16 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 void FarkleAudioProcessorEditor::buttonClicked(Button* button)
 {
 	if (button == &nearestNeighborButton_) {
-		processor.interpolationType = 0;
+		*processor.interpolationType_ = 0;
 	}
 	if (button == &linearInterpolationButton_) {
-		processor.interpolationType = 1;
+		*processor.interpolationType_ = 1;
 	}
 	if (button == &secondOrderInterpolationButton_) {
-		processor.interpolationType = 2;
+		*processor.interpolationType_ = 2;
 	}
 	if (button == &cubicInterpolationButton) {
-		processor.interpolationType = 3;
+		*processor.interpolationType_ = 3;
 	}
 }
 

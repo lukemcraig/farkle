@@ -25,26 +25,35 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 {
 
 	delayWritePosition_ = 0;
+	delayReadPositionDebug_ = 0.0;
 	currentDelayValueDebug_ = 0.0;
-	mainLFOBaseFreq_ = 1.92;
 	mainLFOFreq_ = 0.0;
-	mainLFOWidth_ = .02;
+
+	mainLFOBaseFreq_ = 1.92;
+	mainLFOWidth_ = 0.02;
 	mainLFOPhase_ = 0.0;
 
 	secondLFOFreq_ = 0.958;
 	secondLFOWidth_ = 0.685;
 	secondLFOPhase_ = 0.0;
 
-	delayReadPositionDebug_ = 0.0;
-	interpolationType = 1;
+	addParameter(interpolationType_ = new AudioParameterInt("interptype", // parameter ID
+		"Interpolation Type", // paramter Name
+		0,  // minimum value
+		3, // maximum value
+		1)); // default value
 
-	predelay_ = 0.247;
-	//mix_ = 0.37;
 	addParameter(mix_ = new AudioParameterFloat("mix", // parameter ID
 													"Mix", // paramter Name
 													0.0f,  // minimum value
 													1.0f, // maximum value
 													0.5f)); // default value
+
+	addParameter(predelay_ = new AudioParameterFloat("predelay", // parameter ID
+		"Predelay", // paramter Name
+		0.0f,  // minimum value
+		3.0f, // maximum value
+		0.247f)); // default value
 }
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -125,8 +134,6 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 	mainLFOPhase_ = 0.0;
 	secondLFOPhase_ = 0.0;
 	inverseSampleRate_ = 1.0 / (float)sampleRate;
-
-
 }
 
 void FarkleAudioProcessor::releaseResources()
@@ -189,7 +196,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		local_mainLFOFrequency = mainLFOFreq_;
 		local_mainLFOBaseFrequency = mainLFOBaseFreq_;
 		local_secondLFOPhase = secondLFOPhase_;
-		local_predelay = predelay_;
+		local_predelay = *predelay_;
 		local_mix = *mix_;
 		one_minus_mix = 1.0f - *mix_;
 		for (int sample = 0; sample < numSamples; ++sample) {	
@@ -204,13 +211,13 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			drp = fmodf(drp,  (float)delayBufferLength_);
 
 			// and then we need to do interpolation to calculate a sample amplitude "inbetween" integer indicies
-			if(interpolationType==0)
+			if(*interpolationType_==0)
 				NearestNeighborInterpolation(drp, delayData, interpolatedSample);
-			if (interpolationType == 1)
+			if (*interpolationType_ == 1)
 				LinearInterpolation(drp, delayData, interpolatedSample);
-			if (interpolationType == 2)
+			if (*interpolationType_ == 2)
 				SecondOrderPolynomialInterpolation(drp, delayData, interpolatedSample);
-			if (interpolationType == 3)
+			if (*interpolationType_ == 3)
 				CubicInterpolation(drp, delayData, interpolatedSample);
 
 			// the input sample is written to delayData at the write pointer
@@ -361,12 +368,18 @@ void FarkleAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+	MemoryOutputStream(destData, true).writeFloat(*mix_);
+	MemoryOutputStream(destData, true).writeFloat(*predelay_);
+	MemoryOutputStream(destData, true).writeInt(*interpolationType_);
 }
 
 void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+	*mix_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*predelay_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*interpolationType_ = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readInt();
 }
 
 //==============================================================================
