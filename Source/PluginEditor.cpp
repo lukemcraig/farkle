@@ -21,7 +21,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 	nonEditableLook.setColour(Slider::thumbColourId, Colours::black);
 
-	addComponents();
+	addComponents();	
 
 	// start the timer for polling the debug values
 	startTimerHz(30);
@@ -29,6 +29,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 
 FarkleAudioProcessorEditor::~FarkleAudioProcessorEditor()
 {
+
 }
 
 void FarkleAudioProcessorEditor::addComponents()
@@ -42,6 +43,7 @@ void FarkleAudioProcessorEditor::addComponents()
 
 void FarkleAudioProcessorEditor::addVisualizations()
 {
+
 	// make a horizontal slider widget for the current delay time
 	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);
 	currentDelaySlider_.setRange(0.0, processor.delayBufferLength_ * processor.inverseSampleRate_, 0.0001);
@@ -150,7 +152,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mixSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mixSlider_.getTextBoxHeight());
 	mixSlider_.setPopupDisplayEnabled(true, false, this);
 	mixSlider_.setTextValueSuffix(" Mix %"); //TODO attach a label instead
-	mixSlider_.setValue(processor.mix_);
+	mixSlider_.setValue(*processor.mix_);
 	addAndMakeVisible(&mixSlider_);
 	// add the listener to the slider									  
 	mixSlider_.addListener(this);
@@ -190,20 +192,20 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText ("Farkle", getLocalBounds(), Justification::topLeft, 1);
 }
 
-void FarkleAudioProcessorEditor::resized()
+inline void FarkleAudioProcessorEditor::resized()
 {
-    // lay out the positions of the widgets
+	// lay out the positions of the widgets
 	// visualizations
 	currentDelaySlider_.setBounds(40, 30, 300, 40);
 	delayWritePositionSlider_.setBounds(40, currentDelaySlider_.getBottom(), 300, 40);
 	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
 	mainLFOFrequencySlider_.setBounds(40, delayReadPositionSlider_.getBottom(), 300, 40);
 	// user parameters
-	mainLFOBaseFrequencySlider_.setBounds(40, mainLFOFrequencySlider_.getBottom()+20, 300, 40);
+	mainLFOBaseFrequencySlider_.setBounds(40, mainLFOFrequencySlider_.getBottom() + 20, 300, 40);
 	mainLFOWidthSlider_.setBounds(40, mainLFOBaseFrequencySlider_.getBottom(), 300, 40);
 
 	secondLFOFrequencySlider_.setBounds(40, mainLFOWidthSlider_.getBottom(), 300, 40);
-	secondLFOWidthSlider_.setBounds(40, secondLFOFrequencySlider_.getBottom(), 300, 40);	
+	secondLFOWidthSlider_.setBounds(40, secondLFOFrequencySlider_.getBottom(), 300, 40);
 	predelaySlider_.setBounds(40, secondLFOWidthSlider_.getBottom(), 300, 40);
 	mixSlider_.setBounds(40, predelaySlider_.getBottom(), 300, 40);
 	// interpolation buttons
@@ -235,9 +237,8 @@ void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 		processor.predelay_ = predelaySlider_.getValue();
 	}
 	if (slider == &mixSlider_) {
-		processor.mix_ = mixSlider_.getValue();
-	}
-	
+		*processor.mix_ = mixSlider_.getValue();
+	}	
 }
 
 void FarkleAudioProcessorEditor::buttonClicked(Button* button)

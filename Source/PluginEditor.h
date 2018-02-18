@@ -29,7 +29,7 @@ public:
 
     //==============================================================================
     void paint (Graphics&) override;
-    void resized() override;
+	void resized() override;
 	void timerCallback() override;
 
 private:
@@ -60,8 +60,6 @@ private:
 	TextButton  nearestNeighborButton_;
 	TextButton  secondOrderInterpolationButton_;
 	TextButton  cubicInterpolationButton;
-
-	//AudioVisualiserComponent avc;
 
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)

@@ -69,7 +69,7 @@ public:
 	float secondLFOWidth_;
 
 	float predelay_;
-	float mix_;
+	AudioParameterFloat* mix_;
 
 	float inverseSampleRate_; // so we don't have to recalculate it every sample
 
@@ -80,12 +80,12 @@ private:
 	void CubicInterpolation(float drp, float * delayData, float &interpolatedSample);
 	void SecondOrderPolynomialInterpolation(float drp, float * delayData, float &interpolatedSample);
 	//==============================================================================
+	
+	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
 	//==============================================================================
 	float mainLFOPhase_;
 	float secondLFOPhase_;
-	
-	const double PI = 3.14159265358979323846;
 	//==============================================================================
 	const int ONE_SECOND_AT_48K = 48000;
 

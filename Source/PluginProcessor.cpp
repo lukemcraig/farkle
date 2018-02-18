@@ -39,7 +39,12 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	interpolationType = 1;
 
 	predelay_ = 0.247;
-	mix_ = 0.37;
+	//mix_ = 0.37;
+	addParameter(mix_ = new AudioParameterFloat("mix", // parameter ID
+													"Mix", // paramter Name
+													0.0f,  // minimum value
+													1.0f, // maximum value
+													0.5f)); // default value
 }
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -167,8 +172,10 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	float local_secondLFOPhase = 0.0;
 	float local_mainLFOFrequency = 0.0;
 	float local_mainLFOBaseFrequency = 0.0;
-
 	float currentDelay = 0.0;
+	float local_predelay = 0.0;
+	float local_mix = 0.0;
+	float one_minus_mix = 0.0;
 	float drp = 0.0;
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -182,13 +189,15 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		local_mainLFOFrequency = mainLFOFreq_;
 		local_mainLFOBaseFrequency = mainLFOBaseFreq_;
 		local_secondLFOPhase = secondLFOPhase_;
-
+		local_predelay = predelay_;
+		local_mix = *mix_;
+		one_minus_mix = 1.0f - *mix_;
 		for (int sample = 0; sample < numSamples; ++sample) {	
 
 			float interpolatedSample = 0.0;
 			// calculate the (fractional) delay in seconds based on the lfo's current amplitude
-			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_mainLFOPhase)); //TODO make this more effecient
-			currentDelay += predelay_;
+			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * float_Pi * local_mainLFOPhase)); //TODO make this more effecient
+			currentDelay += local_predelay;
 			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
 			drp = (float)dwp - (float)(currentDelay) * (float)getSampleRate() + (float)delayBufferLength_ - 3.0;
 			// and then wrap it around the circular buffer (fmodf instead of % because it's a float)
@@ -208,7 +217,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			delayData[dwp] = channelData[sample];			
 
 			// the output sample is the interpolatedSample
-			float out  = (interpolatedSample*mix_) + (channelData[sample] * (1.0f - mix_));
+			float out  = (interpolatedSample*local_mix) + (channelData[sample] * one_minus_mix);
 			channelData[sample] = out;
 			//channelData[sample] = interpolatedSample;
 
@@ -226,7 +235,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			assert(local_secondLFOPhase<1.0);
 
 			// update the main LFO's frequency
-			local_mainLFOFrequency = local_mainLFOBaseFrequency + secondLFOWidth_ * (sinf(2.0* PI * local_secondLFOPhase) ); //TODO make this more effecient
+			local_mainLFOFrequency = local_mainLFOBaseFrequency + secondLFOWidth_ * (sinf(2.0* float_Pi * local_secondLFOPhase) ); //TODO make this more effecient
 			assert(local_mainLFOFrequency>=0.0);
 
 			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
