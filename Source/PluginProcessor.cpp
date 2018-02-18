@@ -113,9 +113,9 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need.
-	delayBufferLength_ = ONE_SECOND_AT_48K; // TODO set this more intelligently
-
-	delayBuffer_.setSize(2, delayBufferLength_);	// set the buffer to 2 channels and the size of the delayBufferLength_
+	delayBufferLength_ = ONE_SECOND_AT_48K * 5; // TODO set this more intelligently
+	// set the buffer to the number of input channels and the size of the delayBufferLength_
+	delayBuffer_.setSize(getTotalNumInputChannels(), delayBufferLength_);	
 	delayBuffer_.clear(); // initialize the memory to 0
 	mainLFOPhase_ = 0.0;
 	secondLFOPhase_ = 0.0;
@@ -190,7 +190,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_mainLFOPhase)); //TODO make this more effecient
 			currentDelay += predelay_;
 			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
-			drp = (float)dwp - (float)(currentDelay * getSampleRate()) + (float)delayBufferLength_ - 3.0;
+			drp = (float)dwp - (float)(currentDelay) * (float)getSampleRate() + (float)delayBufferLength_ - 3.0;
 			// and then wrap it around the circular buffer (fmodf instead of % because it's a float)
 			drp = fmodf(drp,  (float)delayBufferLength_);
 

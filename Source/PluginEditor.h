@@ -11,7 +11,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 
-
 //==============================================================================
 /**
 */
@@ -22,6 +21,7 @@ class FarkleAudioProcessorEditor  : public AudioProcessorEditor,
 {
 public:
     FarkleAudioProcessorEditor (FarkleAudioProcessor&);
+	void addComponents();
     ~FarkleAudioProcessorEditor();
 
     //==============================================================================
@@ -57,6 +57,9 @@ private:
 	TextButton  nearestNeighborButton_;
 	TextButton  secondOrderInterpolationButton_;
 	TextButton  cubicInterpolationButton;
+
+	//AudioVisualiserComponent avc;
+
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)
 };
