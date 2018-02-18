@@ -98,18 +98,18 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
 	predelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, predelaySlider_.getTextBoxHeight());
 	predelaySlider_.setPopupDisplayEnabled(true, false, this);
 	predelaySlider_.setTextValueSuffix(" Predelay (sec)"); //TODO attach a label instead
-	predelaySlider_.setValue(0);
+	predelaySlider_.setValue(processor.predelay_);
 	addAndMakeVisible(&predelaySlider_);
 	// add the listener to the slider									  
 	predelaySlider_.addListener(this);
 
 	// make a horizontal slider widget for the predelay
 	mixSlider_.setSliderStyle(Slider::LinearHorizontal);
-	mixSlider_.setRange(0.0, 100.0, 50.0);
+	mixSlider_.setRange(0.0, 1.0, 0.01);
 	mixSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mixSlider_.getTextBoxHeight());
 	mixSlider_.setPopupDisplayEnabled(true, false, this);
 	mixSlider_.setTextValueSuffix(" Mix %"); //TODO attach a label instead
-	mixSlider_.setValue(0);
+	mixSlider_.setValue(processor.mix_);
 	addAndMakeVisible(&mixSlider_);
 	// add the listener to the slider									  
 	mixSlider_.addListener(this);

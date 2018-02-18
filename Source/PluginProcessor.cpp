@@ -26,20 +26,20 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 
 	delayWritePosition_ = 0;
 	currentDelayValueDebug_ = 0.0;
-	mainLFOBaseFreq_ = 2.0;
-	mainLFOFreq_ = 2.0;
-	mainLFOWidth_ = .01;
+	mainLFOBaseFreq_ = 1.92;
+	mainLFOFreq_ = 0.0;
+	mainLFOWidth_ = .02;
 	mainLFOPhase_ = 0.0;
 
-	secondLFOFreq_ = 2.0;
-	secondLFOWidth_ = .01;
+	secondLFOFreq_ = 0.958;
+	secondLFOWidth_ = 0.685;
 	secondLFOPhase_ = 0.0;
 
 	delayReadPositionDebug_ = 0.0;
 	interpolationType = 1;
 
-	predelay_ = 0.0;
-	mix_ = 50.0;
+	predelay_ = 0.247;
+	mix_ = 0.37;
 }
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -187,10 +187,10 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 
 			float interpolatedSample = 0.0;
 			// calculate the (fractional) delay in seconds based on the lfo's current amplitude
-			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0f * PI * local_mainLFOPhase)); //TODO make this more effecient
+			currentDelay = mainLFOWidth_ * (0.5f + 0.5f * sinf(2.0 * PI * local_mainLFOPhase)); //TODO make this more effecient
 			currentDelay += predelay_;
 			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
-			drp = (float)dwp - (float)(currentDelay * (float)getSampleRate()) + (float)delayBufferLength_ - 3.0f;
+			drp = (float)dwp - (float)(currentDelay * getSampleRate()) + (float)delayBufferLength_ - 3.0;
 			// and then wrap it around the circular buffer (fmodf instead of % because it's a float)
 			drp = fmodf(drp,  (float)delayBufferLength_);
 
@@ -205,10 +205,11 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 				CubicInterpolation(drp, delayData, interpolatedSample);
 
 			// the input sample is written to delayData at the write pointer
-			delayData[dwp] = channelData[sample];
+			delayData[dwp] = channelData[sample];			
 
 			// the output sample is the interpolatedSample
-			channelData[sample] = interpolatedSample;
+			channelData[sample] = (interpolatedSample*mix_) + (channelData[sample]*(1.0-mix_));
+			//channelData[sample] = interpolatedSample;
 
 			// the write pointer increments exactly one sample
 			if (++dwp >= delayBufferLength_)
