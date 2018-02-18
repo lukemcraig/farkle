@@ -22,6 +22,9 @@ class FarkleAudioProcessorEditor  : public AudioProcessorEditor,
 public:
     FarkleAudioProcessorEditor (FarkleAudioProcessor&);
 	void addComponents();
+	void addVisualizations();
+	void addParamterControls();
+	void addInterpolationTypeButtons();
     ~FarkleAudioProcessorEditor();
 
     //==============================================================================
