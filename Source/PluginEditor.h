@@ -20,7 +20,9 @@ class FarkleAudioProcessorEditor  : public AudioProcessorEditor,
 		private Timer
 {
 public:
-    FarkleAudioProcessorEditor (FarkleAudioProcessor&);
+	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+
+    FarkleAudioProcessorEditor (FarkleAudioProcessor&, AudioProcessorValueTreeState&);
 	void addComponents();
 	void addVisualizations();
 	void addParamterControls();
@@ -39,22 +41,29 @@ private:
 	//==============================================================================
     FarkleAudioProcessor& processor;
 
+	AudioProcessorValueTreeState& valueTreeState;
+
 	LookAndFeel_V4 nonEditableLook;
 
 	Slider currentDelaySlider_;
 	Slider delayWritePositionSlider_;
 	Slider delayReadPositionSlider_;
+	Slider mainLFOFrequencySlider_;
 
 	Slider mainLFOBaseFrequencySlider_;
-	Slider mainLFOFrequencySlider_;
+	ScopedPointer<SliderAttachment> mainLfoFreqAttachment;
 	Slider mainLFOWidthSlider_;
+	ScopedPointer<SliderAttachment> mainLfoWidthAttachment;
 
 	Slider secondLFOFrequencySlider_;
+	ScopedPointer<SliderAttachment> secondLfoFreqAttachment;
 	Slider secondLFOWidthSlider_;
+	ScopedPointer<SliderAttachment> secondLfoWidthAttachment;
 
 	Slider predelaySlider_;
-
+	ScopedPointer<SliderAttachment> predelayAttachment;
 	Slider mixSlider_;
+	ScopedPointer<SliderAttachment> mixAttachment;
 
 	TextButton  linearInterpolationButton_;
 	TextButton  nearestNeighborButton_;

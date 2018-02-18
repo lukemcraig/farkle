@@ -11,8 +11,8 @@
 
 
 //==============================================================================
-FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p, AudioProcessorValueTreeState& vts)
+    : AudioProcessorEditor (&p), processor (p), valueTreeState(vts)
 {
     // set the gui's window size
     setSize (400, 600);
@@ -93,10 +93,9 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mainLFOBaseFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOBaseFrequencySlider_.getTextBoxHeight());
 	mainLFOBaseFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOBaseFrequencySlider_.setTextValueSuffix(" Main LFO Base frequency (Hz)"); //TODO attach a label instead
-	mainLFOBaseFrequencySlider_.setValue(*processor.mainLFOBaseFreq_);
-	addAndMakeVisible(&mainLFOBaseFrequencySlider_);
-	// add the listener to the slider									  
-	mainLFOBaseFrequencySlider_.addListener(this);
+	mainLFOBaseFrequencySlider_.setValue(0.5f);
+	addAndMakeVisible(&mainLFOBaseFrequencySlider_);								  
+	mainLfoFreqAttachment = new SliderAttachment(valueTreeState, processor.PID_MAINLFOCENTERFREQ, mainLFOBaseFrequencySlider_);
 
 	// make a horizontal slider widget for the main LFO width (aka depth)
 	mainLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
@@ -104,10 +103,9 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mainLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOWidthSlider_.getTextBoxHeight());
 	mainLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width "); //TODO attach a label instead
-	mainLFOWidthSlider_.setValue(*processor.mainLFOWidth_);
-	addAndMakeVisible(&mainLFOWidthSlider_);
-	// add the listener to the slider									  
-	mainLFOWidthSlider_.addListener(this);
+	mainLFOWidthSlider_.setValue(0.001f);
+	addAndMakeVisible(&mainLFOWidthSlider_);								  
+	mainLfoWidthAttachment = new SliderAttachment(valueTreeState, processor.PID_MAINLFOWIDTH, mainLFOWidthSlider_);
 
 	// make a horizontal slider widget for the second LFO frequency
 	secondLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
@@ -115,10 +113,9 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	secondLFOFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, secondLFOFrequencySlider_.getTextBoxHeight());
 	secondLFOFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	secondLFOFrequencySlider_.setTextValueSuffix(" Second LFO frequency (Hz)"); //TODO attach a label instead
-	secondLFOFrequencySlider_.setValue(*processor.secondLFOFreq_);
+	secondLFOFrequencySlider_.setValue(0.001f);
 	addAndMakeVisible(&secondLFOFrequencySlider_);
-	// add the listener to the slider									  
-	secondLFOFrequencySlider_.addListener(this);
+	secondLfoFreqAttachment = new SliderAttachment(valueTreeState, processor.PID_SECONDLFOFREQ, secondLFOFrequencySlider_);
 
 	// make a horizontal slider widget for the second LFO width (aka depth)
 	secondLFOWidthSlider_.setSliderStyle(Slider::ThreeValueHorizontal);
@@ -128,10 +125,9 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	secondLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, secondLFOWidthSlider_.getTextBoxHeight());
 	secondLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	secondLFOWidthSlider_.setTextValueSuffix(" Second LFO Width "); //TODO attach a label instead
-	secondLFOWidthSlider_.setValue(*processor.secondLFOWidth_);
+	secondLFOWidthSlider_.setValue(0.1f);
 	addAndMakeVisible(&secondLFOWidthSlider_);
-	// add the listener to the slider									  
-	secondLFOWidthSlider_.addListener(this);
+	secondLfoWidthAttachment = new SliderAttachment(valueTreeState, processor.PID_SECONDLFOWIDTH, secondLFOWidthSlider_);
 
 	// make a horizontal slider widget for the predelay
 	predelaySlider_.setSliderStyle(Slider::ThreeValueHorizontal);
@@ -141,10 +137,9 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	predelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, predelaySlider_.getTextBoxHeight());
 	predelaySlider_.setPopupDisplayEnabled(true, false, this);
 	predelaySlider_.setTextValueSuffix(" Predelay (sec)"); //TODO attach a label instead
-	predelaySlider_.setValue(*processor.predelay_);
+	predelaySlider_.setValue(0.0f);
 	addAndMakeVisible(&predelaySlider_);
-	// add the listener to the slider									  
-	predelaySlider_.addListener(this);
+	predelayAttachment = new SliderAttachment(valueTreeState, processor.PID_PREDELAY, predelaySlider_);
 
 	// make a horizontal slider widget for the mix %
 	mixSlider_.setSliderStyle(Slider::LinearHorizontal);
@@ -152,10 +147,9 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mixSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mixSlider_.getTextBoxHeight());
 	mixSlider_.setPopupDisplayEnabled(true, false, this);
 	mixSlider_.setTextValueSuffix(" Mix %"); //TODO attach a label instead
-	mixSlider_.setValue(*processor.mix_);
+	mixSlider_.setValue(0.7f);
 	addAndMakeVisible(&mixSlider_);
-	// add the listener to the slider									  
-	mixSlider_.addListener(this);
+	mixAttachment = new SliderAttachment(valueTreeState, processor.PID_MIX, mixSlider_);
 }
 
 void FarkleAudioProcessorEditor::addInterpolationTypeButtons()
@@ -218,42 +212,42 @@ inline void FarkleAudioProcessorEditor::resized()
 void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
 {
 	// if the slider pointer is pointing at the memory address where mainLFOFrequencySlider_ is stored, 
-	if (slider == &mainLFOBaseFrequencySlider_) {
-		*processor.mainLFOBaseFreq_ = mainLFOBaseFrequencySlider_.getValue();
-		secondLFOWidthSlider_.setMaxValue(*processor.mainLFOBaseFreq_, dontSendNotification, true);
-	}
+	//if (slider == &mainLFOBaseFrequencySlider_) {
+	//	*processor.mainLFOBaseFreq_ = mainLFOBaseFrequencySlider_.getValue();
+	//	secondLFOWidthSlider_.setMaxValue(*processor.mainLFOBaseFreq_, dontSendNotification, true);
+	//}
 
-	if (slider == &mainLFOWidthSlider_)
-		*processor.mainLFOWidth_ = mainLFOWidthSlider_.getValue();
+	//if (slider == &mainLFOWidthSlider_)
+	//	*processor.mainLFOWidth_ = mainLFOWidthSlider_.getValue();
 
-	if (slider == &secondLFOFrequencySlider_)
-		*processor.secondLFOFreq_ = secondLFOFrequencySlider_.getValue();
+	//if (slider == &secondLFOFrequencySlider_)
+	//	*processor.secondLFOFreq_ = secondLFOFrequencySlider_.getValue();
 
-	if (slider == &secondLFOWidthSlider_) {
-		*processor.secondLFOWidth_ = secondLFOWidthSlider_.getValue();
-		mainLFOBaseFrequencySlider_.setMinValue(*processor.secondLFOWidth_, dontSendNotification, true);
-	}
-	if (slider == &predelaySlider_) {
-		*processor.predelay_ = predelaySlider_.getValue();
-	}
-	if (slider == &mixSlider_) {
-		*processor.mix_ = mixSlider_.getValue();
-	}	
+	//if (slider == &secondLFOWidthSlider_) {
+	//	*processor.secondLFOWidth_ = secondLFOWidthSlider_.getValue();
+	//	mainLFOBaseFrequencySlider_.setMinValue(*processor.secondLFOWidth_, dontSendNotification, true);
+	//}
+	//if (slider == &predelaySlider_) {
+	//	*processor.predelay_ = predelaySlider_.getValue();
+	//}
+	//if (slider == &mixSlider_) {
+	//	*processor.mix_ = mixSlider_.getValue();
+	//}	
 }
 
 void FarkleAudioProcessorEditor::buttonClicked(Button* button)
 {
 	if (button == &nearestNeighborButton_) {
-		*processor.interpolationType_ = 0;
+		processor.interpolationType_ = 0;
 	}
 	if (button == &linearInterpolationButton_) {
-		*processor.interpolationType_ = 1;
+		processor.interpolationType_ = 1;
 	}
 	if (button == &secondOrderInterpolationButton_) {
-		*processor.interpolationType_ = 2;
+		processor.interpolationType_ = 2;
 	}
 	if (button == &cubicInterpolationButton) {
-		*processor.interpolationType_ = 3;
+		processor.interpolationType_ = 3;
 	}
 }
 
@@ -262,4 +256,5 @@ void FarkleAudioProcessorEditor::timerCallback() {
 	mainLFOFrequencySlider_.setValue(processor.mainLFOFreq_);
 	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
 	delayReadPositionSlider_.setValue(processor.delayReadPositionDebug_);
+	//mixSlider_.setValue(*processor.mix_);
 }
