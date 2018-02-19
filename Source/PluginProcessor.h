@@ -61,14 +61,6 @@ public:
 	float mainLFOFreq_;
 	float inverseSampleRate_; // so we don't have to recalculate it every sample
 	//==============================================================================
-	int interpolationType_;
-	//AudioParameterFloat* mainLFOBaseFreq_;
-	//AudioParameterFloat* mainLFOWidth_;
-	//AudioParameterFloat* secondLFOFreq_;
-	//AudioParameterFloat* secondLFOWidth_;
-	//AudioParameterFloat* predelay_;
-	//AudioParameterFloat* mix_;
-
 	const String PID_INTERPOLATION = "interptype";
 	const String PID_SECONDLFOWIDTH = "secondlfowidth";
 	const String PID_MAINLFOWIDTH = "mainlfowidth";
@@ -76,6 +68,7 @@ public:
 	const String PID_MAINLFOCENTERFREQ = "mainlfocenterfreq";
 	const String PID_MIX = "mix";
 	const String PID_PREDELAY = "predelay";
+
 private:
 	//==============================================================================
 	void NearestNeighborInterpolation(float drp, float * delayData, float &interpolatedSample);
@@ -91,10 +84,8 @@ private:
 	float secondLFOPhase_;
 	//==============================================================================
 	const int ONE_SECOND_AT_48K = 48000;
-
 	//==============================================================================
 	AudioProcessorValueTreeState parameters;
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessor)
 };

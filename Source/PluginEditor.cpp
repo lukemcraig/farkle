@@ -38,7 +38,7 @@ void FarkleAudioProcessorEditor::addComponents()
 
 	addParamterControls();
 
-	addInterpolationTypeButtons();
+	addInterpolationTypeComboBox();
 }
 
 void FarkleAudioProcessorEditor::addVisualizations()
@@ -86,58 +86,47 @@ void FarkleAudioProcessorEditor::addVisualizations()
 void FarkleAudioProcessorEditor::addParamterControls()
 {
 	// make a horizontal slider widget for the main LFO base frequency
-	mainLFOBaseFrequencySlider_.setSliderStyle(Slider::ThreeValueHorizontal);
-	mainLFOBaseFrequencySlider_.setRange(0.01, 5.0, 0.001);
-	mainLFOBaseFrequencySlider_.setMinValue(0.0);
-	mainLFOBaseFrequencySlider_.setMaxValue(5.0);
+	mainLFOBaseFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
 	mainLFOBaseFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOBaseFrequencySlider_.getTextBoxHeight());
 	mainLFOBaseFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOBaseFrequencySlider_.setTextValueSuffix(" Main LFO Base frequency (Hz)"); //TODO attach a label instead
-	mainLFOBaseFrequencySlider_.setValue(0.5f);
+
 	addAndMakeVisible(&mainLFOBaseFrequencySlider_);								  
 	mainLfoFreqAttachment = new SliderAttachment(valueTreeState, processor.PID_MAINLFOCENTERFREQ, mainLFOBaseFrequencySlider_);
 
 	// make a horizontal slider widget for the main LFO width (aka depth)
 	mainLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
-	mainLFOWidthSlider_.setRange(0.001, 1.0, 0.001);
 	mainLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOWidthSlider_.getTextBoxHeight());
 	mainLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	mainLFOWidthSlider_.setTextValueSuffix(" Main LFO Width "); //TODO attach a label instead
-	mainLFOWidthSlider_.setValue(0.001f);
+
 	addAndMakeVisible(&mainLFOWidthSlider_);								  
 	mainLfoWidthAttachment = new SliderAttachment(valueTreeState, processor.PID_MAINLFOWIDTH, mainLFOWidthSlider_);
 
 	// make a horizontal slider widget for the second LFO frequency
-	secondLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
-	secondLFOFrequencySlider_.setRange(0.001, 5.0, 0.001);
+	secondLFOFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);	
 	secondLFOFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, secondLFOFrequencySlider_.getTextBoxHeight());
 	secondLFOFrequencySlider_.setPopupDisplayEnabled(true, false, this);
 	secondLFOFrequencySlider_.setTextValueSuffix(" Second LFO frequency (Hz)"); //TODO attach a label instead
-	secondLFOFrequencySlider_.setValue(0.001f);
+
 	addAndMakeVisible(&secondLFOFrequencySlider_);
 	secondLfoFreqAttachment = new SliderAttachment(valueTreeState, processor.PID_SECONDLFOFREQ, secondLFOFrequencySlider_);
 
 	// make a horizontal slider widget for the second LFO width (aka depth)
-	secondLFOWidthSlider_.setSliderStyle(Slider::ThreeValueHorizontal);
-	secondLFOWidthSlider_.setRange(0.000, 1.0, 0.001);
-	secondLFOWidthSlider_.setMinValue(0.0);
-	secondLFOWidthSlider_.setMaxValue(0.5);
+	secondLFOWidthSlider_.setSliderStyle(Slider::LinearHorizontal);
 	secondLFOWidthSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, secondLFOWidthSlider_.getTextBoxHeight());
 	secondLFOWidthSlider_.setPopupDisplayEnabled(true, false, this);
 	secondLFOWidthSlider_.setTextValueSuffix(" Second LFO Width "); //TODO attach a label instead
-	secondLFOWidthSlider_.setValue(0.1f);
+
 	addAndMakeVisible(&secondLFOWidthSlider_);
 	secondLfoWidthAttachment = new SliderAttachment(valueTreeState, processor.PID_SECONDLFOWIDTH, secondLFOWidthSlider_);
 
 	// make a horizontal slider widget for the predelay
-	predelaySlider_.setSliderStyle(Slider::ThreeValueHorizontal);
-	predelaySlider_.setRange(0.000, 2.0, 0.001);
-	predelaySlider_.setMinValue(0.0);
-	predelaySlider_.setMaxValue(2.0);
+	predelaySlider_.setSliderStyle(Slider::LinearHorizontal);
 	predelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, predelaySlider_.getTextBoxHeight());
 	predelaySlider_.setPopupDisplayEnabled(true, false, this);
 	predelaySlider_.setTextValueSuffix(" Predelay (sec)"); //TODO attach a label instead
-	predelaySlider_.setValue(0.0f);
+
 	addAndMakeVisible(&predelaySlider_);
 	predelayAttachment = new SliderAttachment(valueTreeState, processor.PID_PREDELAY, predelaySlider_);
 
@@ -147,32 +136,18 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mixSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mixSlider_.getTextBoxHeight());
 	mixSlider_.setPopupDisplayEnabled(true, false, this);
 	mixSlider_.setTextValueSuffix(" Mix %"); //TODO attach a label instead
-	mixSlider_.setValue(0.7f);
 	addAndMakeVisible(&mixSlider_);
 	mixAttachment = new SliderAttachment(valueTreeState, processor.PID_MIX, mixSlider_);
 }
 
-void FarkleAudioProcessorEditor::addInterpolationTypeButtons()
+void FarkleAudioProcessorEditor::addInterpolationTypeComboBox()
 {
-	nearestNeighborButton_.setButtonText("Nearest Neighbor");
-	nearestNeighborButton_.setTriggeredOnMouseDown(true);
-	nearestNeighborButton_.addListener(this);
-	addAndMakeVisible(nearestNeighborButton_); //TODO why does this not use the address-of operator?
-
-	linearInterpolationButton_.setButtonText("Linear");
-	linearInterpolationButton_.setTriggeredOnMouseDown(true);
-	linearInterpolationButton_.addListener(this);
-	addAndMakeVisible(linearInterpolationButton_);
-
-	secondOrderInterpolationButton_.setButtonText("Second Order");
-	secondOrderInterpolationButton_.setTriggeredOnMouseDown(true);
-	secondOrderInterpolationButton_.addListener(this);
-	addAndMakeVisible(secondOrderInterpolationButton_);
-
-	cubicInterpolationButton.setButtonText("Cubic");
-	cubicInterpolationButton.setTriggeredOnMouseDown(true);
-	cubicInterpolationButton.addListener(this);
-	addAndMakeVisible(cubicInterpolationButton);
+	interpolationComboBox_.addItem("Nearest Neighbor", 1);
+	interpolationComboBox_.addItem("Linear", 2);
+	interpolationComboBox_.addItem("Second Order", 3);
+	interpolationComboBox_.addItem("Cubic", 4);
+	addAndMakeVisible(interpolationComboBox_);
+	interpolationAttachment = new ComboBoxAttachment(valueTreeState, processor.PID_INTERPOLATION, interpolationComboBox_);
 }
 
 //==============================================================================
@@ -189,6 +164,7 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
 inline void FarkleAudioProcessorEditor::resized()
 {
 	// lay out the positions of the widgets
+
 	// visualizations
 	currentDelaySlider_.setBounds(40, 30, 300, 40);
 	delayWritePositionSlider_.setBounds(40, currentDelaySlider_.getBottom(), 300, 40);
@@ -202,53 +178,8 @@ inline void FarkleAudioProcessorEditor::resized()
 	secondLFOWidthSlider_.setBounds(40, secondLFOFrequencySlider_.getBottom(), 300, 40);
 	predelaySlider_.setBounds(40, secondLFOWidthSlider_.getBottom(), 300, 40);
 	mixSlider_.setBounds(40, predelaySlider_.getBottom(), 300, 40);
-	// interpolation buttons
-	nearestNeighborButton_.setBounds(40, mixSlider_.getBottom(), 150, 30);
-	linearInterpolationButton_.setBounds(nearestNeighborButton_.getRight(), mixSlider_.getBottom(), 150, 30);
-	secondOrderInterpolationButton_.setBounds(40, linearInterpolationButton_.getBottom(), 150, 30);
-	cubicInterpolationButton.setBounds(secondOrderInterpolationButton_.getRight(), linearInterpolationButton_.getBottom(), 150, 30);
-}
-
-void FarkleAudioProcessorEditor::sliderValueChanged(Slider * slider)
-{
-	// if the slider pointer is pointing at the memory address where mainLFOFrequencySlider_ is stored, 
-	//if (slider == &mainLFOBaseFrequencySlider_) {
-	//	*processor.mainLFOBaseFreq_ = mainLFOBaseFrequencySlider_.getValue();
-	//	secondLFOWidthSlider_.setMaxValue(*processor.mainLFOBaseFreq_, dontSendNotification, true);
-	//}
-
-	//if (slider == &mainLFOWidthSlider_)
-	//	*processor.mainLFOWidth_ = mainLFOWidthSlider_.getValue();
-
-	//if (slider == &secondLFOFrequencySlider_)
-	//	*processor.secondLFOFreq_ = secondLFOFrequencySlider_.getValue();
-
-	//if (slider == &secondLFOWidthSlider_) {
-	//	*processor.secondLFOWidth_ = secondLFOWidthSlider_.getValue();
-	//	mainLFOBaseFrequencySlider_.setMinValue(*processor.secondLFOWidth_, dontSendNotification, true);
-	//}
-	//if (slider == &predelaySlider_) {
-	//	*processor.predelay_ = predelaySlider_.getValue();
-	//}
-	//if (slider == &mixSlider_) {
-	//	*processor.mix_ = mixSlider_.getValue();
-	//}	
-}
-
-void FarkleAudioProcessorEditor::buttonClicked(Button* button)
-{
-	if (button == &nearestNeighborButton_) {
-		processor.interpolationType_ = 0;
-	}
-	if (button == &linearInterpolationButton_) {
-		processor.interpolationType_ = 1;
-	}
-	if (button == &secondOrderInterpolationButton_) {
-		processor.interpolationType_ = 2;
-	}
-	if (button == &cubicInterpolationButton) {
-		processor.interpolationType_ = 3;
-	}
+	// interpolation combo box
+	interpolationComboBox_.setBounds(40, mixSlider_.getBottom(), 150, 30);
 }
 
 void FarkleAudioProcessorEditor::timerCallback() {
@@ -256,5 +187,4 @@ void FarkleAudioProcessorEditor::timerCallback() {
 	mainLFOFrequencySlider_.setValue(processor.mainLFOFreq_);
 	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
 	delayReadPositionSlider_.setValue(processor.delayReadPositionDebug_);
-	//mixSlider_.setValue(*processor.mix_);
 }

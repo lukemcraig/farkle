@@ -15,18 +15,17 @@
 /**
 */
 class FarkleAudioProcessorEditor  : public AudioProcessorEditor,
-		private Slider::Listener,
-		private Button::Listener,
 		private Timer
 {
 public:
-	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment; // This way we don't have to retype the whole thing each time
+	typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
 
     FarkleAudioProcessorEditor (FarkleAudioProcessor&, AudioProcessorValueTreeState&);
 	void addComponents();
 	void addVisualizations();
 	void addParamterControls();
-	void addInterpolationTypeButtons();
+	void addInterpolationTypeComboBox();
     ~FarkleAudioProcessorEditor();
 
     //==============================================================================
@@ -36,8 +35,8 @@ public:
 
 private:
 	//==============================================================================
-	void sliderValueChanged(Slider* slider) override;
-	void buttonClicked(Button* button) override;
+	//void sliderValueChanged(Slider* slider) override;
+	//void buttonClicked(Button* button) override;
 	//==============================================================================
     FarkleAudioProcessor& processor;
 
@@ -65,11 +64,8 @@ private:
 	Slider mixSlider_;
 	ScopedPointer<SliderAttachment> mixAttachment;
 
-	TextButton  linearInterpolationButton_;
-	TextButton  nearestNeighborButton_;
-	TextButton  secondOrderInterpolationButton_;
-	TextButton  cubicInterpolationButton;
-
+	ComboBox interpolationComboBox_;
+	ScopedPointer<ComboBoxAttachment> interpolationAttachment;
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)
 };

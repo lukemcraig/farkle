@@ -65,7 +65,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 
 	parameters.createAndAddParameter(PID_MIX, // parameter ID
 		"Mix", // paramter Name
-		String(), // parameter label (suffix)
+		String("%"), // parameter label (suffix)
 		NormalisableRange<float>(0.0f, 1.0f), //range
 		0.75f, // default value
 		nullptr,
@@ -79,13 +79,19 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 		nullptr,
 		nullptr);
 
+	parameters.createAndAddParameter(PID_INTERPOLATION, // parameter ID
+		"Interpolation Type", // paramter Name
+		String(), // parameter label (suffix)
+		NormalisableRange<float>(0.0f, 3.0f), //range
+		1, // default value
+		nullptr,
+		nullptr,
+		false, // isMetaParameter 
+		true, // isAutomatableParameter 
+		true); // isDiscrete
+
 	parameters.state = ValueTree(Identifier("VTParamters"));
-
-	interpolationType_ = 1;
-
 }	
-
-
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
 {
@@ -233,8 +239,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		local_predelay = *parameters.getRawParameterValue(PID_PREDELAY);
 		local_mix = *parameters.getRawParameterValue(PID_MIX);
 		one_minus_mix = 1.0f - local_mix;
-		local_interpolationType = interpolationType_;
-
+		local_interpolationType = *parameters.getRawParameterValue(PID_INTERPOLATION);
 		dwp = delayWritePosition_;
 		local_mainLFOPhase = mainLFOPhase_;
 		local_secondLFOPhase = secondLFOPhase_;
@@ -252,7 +257,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			drp = fmodf(drp,  (float)delayBufferLength_);
 
 			// and then we need to do interpolation to calculate a sample amplitude "inbetween" integer indicies
-			if(local_interpolationType ==0)
+			if(local_interpolationType == 0)
 				NearestNeighborInterpolation(drp, delayData, interpolatedSample);
 			if (local_interpolationType == 1)
 				LinearInterpolation(drp, delayData, interpolatedSample);
@@ -406,53 +411,18 @@ AudioProcessorEditor* FarkleAudioProcessor::createEditor()
 //==============================================================================
 void FarkleAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
 	ScopedPointer<XmlElement> xml(parameters.state.createXml()); //TODO ScopedPointer?
 	copyXmlToBinary(*xml, destData);
 
-	/*ScopedPointer<XmlElement> xml(new XmlElement("Paramters")); 
-	xml->setAttribute(PID_INTERPOLATION, *interpolationType_);
-	xml->setAttribute(PID_MAINLFOCENTERFREQ, (double)*mainLFOBaseFreq_);
-	xml->setAttribute(PID_MAINLFOWIDTH, (double)*mainLFOWidth_);
-	xml->setAttribute(PID_SECONDLFOFREQ, (double)*secondLFOFreq_);
-	xml->setAttribute(PID_SECONDLFOWIDTH, (double)*secondLFOWidth_);
-	xml->setAttribute(PID_MIX, (double)*mix_);
-	xml->setAttribute(PID_PREDELAY, (double)*predelay_);
-	copyXmlToBinary(*xml, destData);*/
 }
 
 void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-	
 	ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
 	if (xmlState != nullptr)
 		if (xmlState->hasTagName(parameters.state.getType()))
 			parameters.state = ValueTree::fromXml(*xmlState);
-
-	/*ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data,sizeInBytes));
-	if (xmlState != nullptr) {
-		if (xmlState->hasTagName("Parameters")) {
-			if (xmlState->hasAttribute(PID_INTERPOLATION))
-				*interpolationType_ = xmlState->getIntAttribute(PID_INTERPOLATION);
-			if (xmlState->hasAttribute(PID_MAINLFOCENTERFREQ))
-				*mainLFOBaseFreq_ = xmlState->getDoubleAttribute(PID_MAINLFOCENTERFREQ);
-			if (xmlState->hasAttribute(PID_MAINLFOWIDTH))
-				*mainLFOWidth_ = xmlState->getDoubleAttribute(PID_MAINLFOWIDTH);
-			if (xmlState->hasAttribute(PID_SECONDLFOFREQ))
-				*secondLFOFreq_ = xmlState->getDoubleAttribute(PID_SECONDLFOFREQ);
-			if (xmlState->hasAttribute(PID_SECONDLFOWIDTH))
-				*secondLFOWidth_ = xmlState->getDoubleAttribute(PID_SECONDLFOWIDTH);
-			if (xmlState->hasAttribute(PID_MIX))
-				*mix_ = xmlState->getDoubleAttribute(PID_MIX);
-			if (xmlState->hasAttribute(PID_PREDELAY))
-				*predelay_ = xmlState->getDoubleAttribute(PID_PREDELAY);
-		}
-	}*/
 }
 
 //==============================================================================
