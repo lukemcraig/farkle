@@ -10,6 +10,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "PresetFile.h"
 
 //==============================================================================
 /**
@@ -44,6 +45,7 @@ private:
 	LookAndFeel_V4 nonEditableLook;
 
 	ComboBox presetComboBox_;
+	OwnedArray<PresetFile> presetArray_;
 
 	Slider currentDelaySlider_;
 	Slider delayWritePositionSlider_;
@@ -67,7 +69,6 @@ private:
 
 	ComboBox interpolationComboBox_;
 	ScopedPointer<ComboBoxAttachment> interpolationAttachment;
-
 
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)

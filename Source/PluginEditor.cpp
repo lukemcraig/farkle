@@ -20,7 +20,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p,
 	setResizable(true, true);
 
 	nonEditableLook.setColour(Slider::thumbColourId, Colours::black);
-
+	
 	addComponents();	
 
 	// start the timer for polling the debug values
@@ -46,15 +46,18 @@ void FarkleAudioProcessorEditor::addComponents()
 void FarkleAudioProcessorEditor::addPresetComboBox() {
 	File cwd = File::getCurrentWorkingDirectory();		
 	DirectoryIterator iter(cwd,true,"*.xml");
-	int i = 1;
 	while (iter.next())
 	{
 		File theFileItFound(iter.getFile());
-		presetComboBox_.addItem(theFileItFound.getFileNameWithoutExtension(), i);
-		i++;
+		String filename(theFileItFound.getFileNameWithoutExtension());
+		presetArray_.add(new PresetFile(filename, theFileItFound));		
 	}
-	//presetComboBox_.addItem("Doubler", 1);
-	//presetComboBox_.addItem("Farkle", 2);
+	for(int i=0;i<presetArray_.size();i++)
+	{
+		PresetFile * preset = presetArray_[i];
+		String name = preset->name_;
+		presetComboBox_.addItem(name, i + 1);
+	}
 	addAndMakeVisible(presetComboBox_);
 	presetComboBox_.addListener(this);
 }
@@ -160,8 +163,6 @@ void FarkleAudioProcessorEditor::addParamterControls()
 
 void FarkleAudioProcessorEditor::addInterpolationTypeComboBox()
 {
-	
-
 	interpolationComboBox_.addItem("Nearest Neighbor", 1);
 	interpolationComboBox_.addItem("Linear", 2);
 	interpolationComboBox_.addItem("Second Order", 3);
@@ -213,6 +214,6 @@ void FarkleAudioProcessorEditor::comboBoxChanged(ComboBox * comboBoxThatHasChang
 {
 	if (comboBoxThatHasChanged == &presetComboBox_) 
 	{
-		processor.loadPreset();
+		processor.loadPreset(presetArray_[presetComboBox_.getSelectedItemIndex()]->xmlFile_);
 	}
 }
