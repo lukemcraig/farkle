@@ -423,8 +423,6 @@ void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInByte
 	if (xmlState != nullptr)
 		if (xmlState->hasTagName(parameters.state.getType()))
 			parameters.state = ValueTree::fromXml(*xmlState);
-
-	loadPreset();
 }
 
 void FarkleAudioProcessor::loadPreset()

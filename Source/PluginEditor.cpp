@@ -145,6 +145,7 @@ void FarkleAudioProcessorEditor::addInterpolationTypeComboBox()
 	presetComboBox_.addItem("Doubler", 1);
 	presetComboBox_.addItem("Farkle", 2);
 	addAndMakeVisible(presetComboBox_);	
+	presetComboBox_.addListener(this);
 
 	interpolationComboBox_.addItem("Nearest Neighbor", 1);
 	interpolationComboBox_.addItem("Linear", 2);
@@ -191,4 +192,12 @@ void FarkleAudioProcessorEditor::timerCallback() {
 	mainLFOFrequencySlider_.setValue(processor.mainLFOFreq_);
 	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
 	delayReadPositionSlider_.setValue(processor.delayReadPositionDebug_);
+}
+
+void FarkleAudioProcessorEditor::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
+{
+	if (comboBoxThatHasChanged == &presetComboBox_) 
+	{
+		processor.loadPreset();
+	}
 }

@@ -15,6 +15,7 @@
 /**
 */
 class FarkleAudioProcessorEditor  : public AudioProcessorEditor,
+		private ComboBox::Listener,
 		private Timer
 {
 public:
@@ -32,6 +33,7 @@ public:
     void paint (Graphics&) override;
 	void resized() override;
 	void timerCallback() override;
+	void comboBoxChanged(ComboBox * comboBoxThatHasChanged) override;
 
 private:
     FarkleAudioProcessor& processor;
