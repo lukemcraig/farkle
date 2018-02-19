@@ -427,18 +427,11 @@ void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInByte
 
 void FarkleAudioProcessor::loadPreset(File file)
 {
-	//FileChooser chooser("Select a preset",
-	//	File::nonexistent,
-	//	"*.xml");
-	//if (chooser.browseForFileToOpen())
-	//{
-	//	File file(chooser.getResult());
 		XmlDocument  xmlFile( file);
 		ScopedPointer<XmlElement> xmlState = xmlFile.getDocumentElement();
 		if (xmlState != nullptr)
 			if (xmlState->hasTagName(parameters.state.getType()))
 				parameters.state = ValueTree::fromXml(*xmlState);	
-	//}
 }
 
 //==============================================================================

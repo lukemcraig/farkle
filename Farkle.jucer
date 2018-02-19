@@ -14,6 +14,8 @@
               companyName="Liminal Signals">
   <MAINGROUP id="m4D9r1" name="Farkle">
     <GROUP id="{F9347238-5F59-96FC-BC9F-B481798D079E}" name="Source">
+      <FILE id="NGktjB" name="PresetFile.cpp" compile="1" resource="0" file="Source/PresetFile.cpp"/>
+      <FILE id="lIGwdg" name="PresetFile.h" compile="0" resource="0" file="Source/PresetFile.h"/>
       <FILE id="yDueIQ" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="RkXcnD" name="PluginProcessor.h" compile="0" resource="0"

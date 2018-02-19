@@ -44,7 +44,7 @@ void FarkleAudioProcessorEditor::addComponents()
 }
 
 void FarkleAudioProcessorEditor::addPresetComboBox() {
-	File cwd = File::getCurrentWorkingDirectory();		
+	File cwd = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory();
 	DirectoryIterator iter(cwd,true,"*.xml");
 	while (iter.next())
 	{
