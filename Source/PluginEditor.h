@@ -24,6 +24,7 @@ public:
 
     FarkleAudioProcessorEditor (FarkleAudioProcessor&, AudioProcessorValueTreeState&);
 	void addComponents();
+	void addPresetComboBox();
 	void addVisualizations();
 	void addParamterControls();
 	void addInterpolationTypeComboBox();

@@ -34,11 +34,29 @@ FarkleAudioProcessorEditor::~FarkleAudioProcessorEditor()
 
 void FarkleAudioProcessorEditor::addComponents()
 {
+	addPresetComboBox();
+
 	addVisualizations();
 
 	addParamterControls();
 
 	addInterpolationTypeComboBox();
+}
+
+void FarkleAudioProcessorEditor::addPresetComboBox() {
+	File cwd = File::getCurrentWorkingDirectory();		
+	DirectoryIterator iter(cwd,true,"*.xml");
+	int i = 1;
+	while (iter.next())
+	{
+		File theFileItFound(iter.getFile());
+		presetComboBox_.addItem(theFileItFound.getFileNameWithoutExtension(), i);
+		i++;
+	}
+	//presetComboBox_.addItem("Doubler", 1);
+	//presetComboBox_.addItem("Farkle", 2);
+	addAndMakeVisible(presetComboBox_);
+	presetComboBox_.addListener(this);
 }
 
 void FarkleAudioProcessorEditor::addVisualizations()
@@ -142,10 +160,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 
 void FarkleAudioProcessorEditor::addInterpolationTypeComboBox()
 {
-	presetComboBox_.addItem("Doubler", 1);
-	presetComboBox_.addItem("Farkle", 2);
-	addAndMakeVisible(presetComboBox_);	
-	presetComboBox_.addListener(this);
+	
 
 	interpolationComboBox_.addItem("Nearest Neighbor", 1);
 	interpolationComboBox_.addItem("Linear", 2);
