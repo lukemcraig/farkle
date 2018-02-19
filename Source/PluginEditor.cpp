@@ -142,6 +142,10 @@ void FarkleAudioProcessorEditor::addParamterControls()
 
 void FarkleAudioProcessorEditor::addInterpolationTypeComboBox()
 {
+	presetComboBox_.addItem("Doubler", 1);
+	presetComboBox_.addItem("Farkle", 2);
+	addAndMakeVisible(presetComboBox_);	
+
 	interpolationComboBox_.addItem("Nearest Neighbor", 1);
 	interpolationComboBox_.addItem("Linear", 2);
 	interpolationComboBox_.addItem("Second Order", 3);
@@ -164,9 +168,9 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
 inline void FarkleAudioProcessorEditor::resized()
 {
 	// lay out the positions of the widgets
-
+	presetComboBox_.setBounds(40, 30, 150, 30);
 	// visualizations
-	currentDelaySlider_.setBounds(40, 30, 300, 40);
+	currentDelaySlider_.setBounds(40, presetComboBox_.getBottom(), 300, 40);
 	delayWritePositionSlider_.setBounds(40, currentDelaySlider_.getBottom(), 300, 40);
 	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
 	mainLFOFrequencySlider_.setBounds(40, delayReadPositionSlider_.getBottom(), 300, 40);

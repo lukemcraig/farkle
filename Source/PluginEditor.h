@@ -34,15 +34,13 @@ public:
 	void timerCallback() override;
 
 private:
-	//==============================================================================
-	//void sliderValueChanged(Slider* slider) override;
-	//void buttonClicked(Button* button) override;
-	//==============================================================================
     FarkleAudioProcessor& processor;
 
 	AudioProcessorValueTreeState& valueTreeState;
 
 	LookAndFeel_V4 nonEditableLook;
+
+	ComboBox presetComboBox_;
 
 	Slider currentDelaySlider_;
 	Slider delayWritePositionSlider_;
@@ -66,6 +64,8 @@ private:
 
 	ComboBox interpolationComboBox_;
 	ScopedPointer<ComboBoxAttachment> interpolationAttachment;
+
+
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)
 };

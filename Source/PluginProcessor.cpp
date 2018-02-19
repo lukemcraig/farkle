@@ -90,7 +90,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 		true, // isAutomatableParameter 
 		true); // isDiscrete
 
-	parameters.state = ValueTree(Identifier("VTParamters"));
+	parameters.state = ValueTree(Identifier("FarkleParameters"));
 }	
 
 FarkleAudioProcessor::~FarkleAudioProcessor()
@@ -423,6 +423,24 @@ void FarkleAudioProcessor::setStateInformation (const void* data, int sizeInByte
 	if (xmlState != nullptr)
 		if (xmlState->hasTagName(parameters.state.getType()))
 			parameters.state = ValueTree::fromXml(*xmlState);
+
+	loadPreset();
+}
+
+void FarkleAudioProcessor::loadPreset()
+{
+	FileChooser chooser("Select a preset",
+		File::nonexistent,
+		"*.xml");
+	if (chooser.browseForFileToOpen())
+	{
+		File file(chooser.getResult());
+		XmlDocument  xmlFile( file);
+		ScopedPointer<XmlElement> xmlState = xmlFile.getDocumentElement();
+		if (xmlState != nullptr)
+			if (xmlState->hasTagName(parameters.state.getType()))
+				parameters.state = ValueTree::fromXml(*xmlState);	
+	}
 }
 
 //==============================================================================
