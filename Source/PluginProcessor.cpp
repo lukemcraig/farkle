@@ -353,7 +353,7 @@ void FarkleAudioProcessor::SecondOrderPolynomialInterpolation(float drp, float *
 	// get the sample index to the left of the fractional sample x[n]
 	int previousSampleIndex = (int)floorf(drp); // x[n]
 	// get the sample index 2 to the left of the fractional sample x[n-1], accounting for the circular buffer
-	int previousPreviousSampleIndex = (previousSampleIndex-1) % delayBufferLength_;
+	int previousPreviousSampleIndex = (previousSampleIndex-1+ delayBufferLength_) % delayBufferLength_;
 	// get the sample index to the right of the fractional sample, accounting for the circular buffer
 	int nextSampleIndex = (previousSampleIndex + 1) % delayBufferLength_;
 	
@@ -378,7 +378,7 @@ void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, floa
 	// get the sample index to the left of the fractional sample x[n]
 	int n = (int)floorf(drp); // x[n]
 	// get the sample index 2 to the left of the fractional sample x[n-1], accounting for the circular buffer
-	int n_minus_1 = (n - 1) % delayBufferLength_;
+	int n_minus_1 = (n - 1 + delayBufferLength_) % delayBufferLength_;
 	// get the sample index to the right of the fractional sample, accounting for the circular buffer
 	int n_plus_1 = (n + 1) % delayBufferLength_;
 	// get the sample index 2 to the right of the fractional sample, accounting for the circular buffer
