@@ -366,7 +366,6 @@ void FarkleAudioProcessor::SecondOrderPolynomialInterpolation(float drp, float *
 
 void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, float &interpolatedSample)
 {
-	// TODO
 	// x(t) = c3(t-n)^3 + c2(t-n)^2 + c1(t-n) + c0  for n<= t < n+1
 
 	// c3 = -x[n-1]+x[n]-x[n+1]+x[n+2]
@@ -385,16 +384,15 @@ void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, floa
 	// get the sample index 2 to the right of the fractional sample, accounting for the circular buffer
 	int n_plus_2 = (n + 2) % delayBufferLength_;
 
+	float a0 = -0.5*(delayData[n_plus_1]- delayData[n_minus_1]);
+
 	// coeffecients
 	float c3 = -delayData[n_minus_1] + delayData[n] - delayData[n_plus_1] + delayData[n_plus_2];
-	float c2 = delayData[n_minus_1] - delayData[n]; //TODO a0
+	float c2 = delayData[n_minus_1] - delayData[n] - a0; 
 	float c1 = delayData[n_plus_1]-delayData[n_minus_1];
 	float c0 = delayData[n];
 
-	//float term1 = c3;
-	//float term2 = c2
-
-	interpolatedSample = 0.0;
+	interpolatedSample = c3*(t*t*t) + c2*(t*t) + c1*(t) + c0;
 }
 
 //==============================================================================
@@ -411,7 +409,7 @@ AudioProcessorEditor* FarkleAudioProcessor::createEditor()
 //==============================================================================
 void FarkleAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-	ScopedPointer<XmlElement> xml(parameters.state.createXml()); //TODO ScopedPointer?
+	ScopedPointer<XmlElement> xml(parameters.state.createXml()); 
 	copyXmlToBinary(*xml, destData);
 
 }
