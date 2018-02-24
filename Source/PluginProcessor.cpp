@@ -170,7 +170,7 @@ void FarkleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 	delayBuffer_.clear(); // initialize the memory to 0
 	mainLFOPhase_ = 0.0;
 	secondLFOPhase_ = 0.0;
-	inverseSampleRate_ = 1.0 / (float)sampleRate;
+	inverseSampleRate_ = 1.0f / (float)sampleRate;
 }
 
 void FarkleAudioProcessor::releaseResources()
@@ -239,7 +239,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		local_predelay = *parameters.getRawParameterValue(PID_PREDELAY);
 		local_mix = *parameters.getRawParameterValue(PID_MIX);
 		one_minus_mix = 1.0f - local_mix;
-		local_interpolationType = *parameters.getRawParameterValue(PID_INTERPOLATION);
+		local_interpolationType = (int)*parameters.getRawParameterValue(PID_INTERPOLATION);
 		dwp = delayWritePosition_;
 		local_mainLFOPhase = mainLFOPhase_;
 		local_secondLFOPhase = secondLFOPhase_;
@@ -249,10 +249,10 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 
 			float interpolatedSample = 0.0;
 			// calculate the (fractional) delay in seconds based on the lfo's current amplitude
-			currentDelay = local_mainLFOWidth * (0.5f + 0.5f * sinf(2.0 * float_Pi * local_mainLFOPhase)); //TODO make this more effecient
+			currentDelay = local_mainLFOWidth * (0.5f + 0.5f * sinf(2.0f * float_Pi * local_mainLFOPhase)); //TODO make this more effecient
 			currentDelay += local_predelay;
 			// then the delay read position is (hypothetically) the currentDelay and 3 more samples behind the write position 
-			drp = (float)dwp - (float)(currentDelay) * (float)getSampleRate() + (float)delayBufferLength_ - 3.0;
+			drp = (float)dwp - (float)(currentDelay) * (float)getSampleRate() + (float)delayBufferLength_ - 3.0f;
 			// and then wrap it around the circular buffer (fmodf instead of % because it's a float)
 			drp = fmodf(drp,  (float)delayBufferLength_);
 
@@ -288,7 +288,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			assert(local_secondLFOPhase<1.0);
 
 			// update the main LFO's frequency
-			local_mainLFOFrequency = local_mainLFOBaseFrequency + local_secondLFOWidth * (sinf(2.0* float_Pi * local_secondLFOPhase) ); //TODO make this more effecient
+			local_mainLFOFrequency = local_mainLFOBaseFrequency + local_secondLFOWidth * (sinf(2.0f * float_Pi * local_secondLFOPhase) ); //TODO make this more effecient
 			assert(local_mainLFOFrequency>=0.0);
 
 			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency
@@ -351,17 +351,17 @@ void FarkleAudioProcessor::SecondOrderPolynomialInterpolation(float drp, float *
 	// get the fractional part of the delay read position
 	float t = drp - floorf(drp);
 	// get the sample index to the left of the fractional sample x[n]
-	int previousSampleIndex = (int)floorf(drp); // x[n]
+	int n = (int)floorf(drp); // x[n]
 	// get the sample index 2 to the left of the fractional sample x[n-1], accounting for the circular buffer
-	int previousPreviousSampleIndex = (previousSampleIndex-1+ delayBufferLength_) % delayBufferLength_;
+	int n_minus_1 = (n-1+ delayBufferLength_) % delayBufferLength_;
 	// get the sample index to the right of the fractional sample, accounting for the circular buffer
-	int nextSampleIndex = (previousSampleIndex + 1) % delayBufferLength_;
+	int nextSampleIndex = (n + 1) % delayBufferLength_;
 	
-	float term1 = (t-1.0f)*t*delayData[previousPreviousSampleIndex];
-	float term2 = -2.0f*(t-1.0f)*(t+1.0f)*(delayData[previousSampleIndex]);
+	float term1 = (t-1.0f)*t*delayData[n_minus_1];
+	float term2 = -2.0f*(t-1.0f)*(t+1.0f)*(delayData[n]);
 	float term3 = t*(t+1.0f)*delayData[nextSampleIndex]; 
 
-	interpolatedSample = (term1 + term2 + term3) / 2.0f; //TODO what is the difference with the f or not?
+	interpolatedSample = (term1 + term2 + term3) / 2.0f;
 }
 
 void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, float &interpolatedSample)
@@ -384,15 +384,23 @@ void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, floa
 	// get the sample index 2 to the right of the fractional sample, accounting for the circular buffer
 	int n_plus_2 = (n + 2) % delayBufferLength_;
 
-	float a0 = -0.5*(delayData[n_plus_1]- delayData[n_minus_1]);
+	float x_n = delayData[n];
+	float x_n_minus_1 = delayData[n_minus_1];
+	float x_n_plus_1 = delayData[n_plus_1];
+	float x_n_plus_2 = delayData[n_plus_2];
+
+	float a0 = -0.5f*(x_n_plus_1 - x_n_minus_1);
 
 	// coeffecients
-	float c3 = -delayData[n_minus_1] + delayData[n] - delayData[n_plus_1] + delayData[n_plus_2];
-	float c2 = delayData[n_minus_1] - delayData[n] - a0; 
-	float c1 = delayData[n_plus_1]-delayData[n_minus_1];
-	float c0 = delayData[n];
+	float c3 = -x_n_minus_1 + x_n - x_n_plus_1 + x_n_plus_2;
+	float c2 = x_n_minus_1 - x_n - a0;
+	float c1 = x_n_plus_1 - x_n_minus_1;
+	float c0 = x_n;
 
-	interpolatedSample = c3*(t*t*t) + c2*(t*t) + c1*(t) + c0;
+	float result = c3*pow(t,3.0f) + c2* pow(t, 2.0f) + c1*(t) + c0;
+	assert(result >= -1.0f && result <= 1.0f);
+	//DBG( "(-1.0,"  << x_n_minus_1 << "), (0.0," << x_n << "), (" << t <<","<< result << "), (1.0," << x_n_plus_1 << "), (2.0," << x_n_plus_2 << ")");
+	interpolatedSample = result;
 }
 
 //==============================================================================
