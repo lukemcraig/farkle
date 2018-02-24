@@ -375,6 +375,7 @@ void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, floa
 
 	// get the fractional part of the delay read position
 	float t = drp - floorf(drp);
+	float t_squared = t * t;
 	// get the sample index to the left of the fractional sample x[n]
 	int n = (int)floorf(drp); // x[n]
 	// get the sample index 2 to the left of the fractional sample x[n-1], accounting for the circular buffer
@@ -384,17 +385,15 @@ void FarkleAudioProcessor::CubicInterpolation(float drp, float * delayData, floa
 	// get the sample index 2 to the right of the fractional sample, accounting for the circular buffer
 	int n_plus_2 = (n + 2) % delayBufferLength_;
 
-	float x_n = delayData[n];
 	float x_n_minus_1 = delayData[n_minus_1];
+	float x_n = delayData[n];
 	float x_n_plus_1 = delayData[n_plus_1];
 	float x_n_plus_2 = delayData[n_plus_2];
 
-	float a0 = -0.5f*(x_n_plus_1 - x_n_minus_1);
-
 	// coeffecients
-	float c3 = -x_n_minus_1 + x_n - x_n_plus_1 + x_n_plus_2;
-	float c2 = x_n_minus_1 - x_n - a0;
-	float c1 = x_n_plus_1 - x_n_minus_1;
+	float c3 = -0.5f*x_n_minus_1 + 1.5f*x_n - 1.5f*x_n_plus_1 + 0.5f*x_n_plus_2;
+	float c2 = x_n_minus_1 - 2.5f*x_n + 2.0f*x_n_plus_1 - 0.5f*x_n_plus_2;
+	float c1 = -0.5f*x_n_minus_1+0.5f*x_n_plus_1;
 	float c0 = x_n;
 
 	float result = c3*pow(t,3.0f) + c2* pow(t, 2.0f) + c1*(t) + c0;
