@@ -15,7 +15,7 @@ FarkleAudioProcessorEditor::FarkleAudioProcessorEditor (FarkleAudioProcessor& p,
     : AudioProcessorEditor (&p), processor (p), valueTreeState(vts)
 {
     // set the gui's window size
-    setSize (400, 600);
+    setSize (400, 630);
 	// make the gui's window resizeable
 	setResizable(true, true);
 
@@ -41,6 +41,11 @@ void FarkleAudioProcessorEditor::addComponents()
 	addParamterControls();
 
 	addInterpolationTypeComboBox();
+
+	addAndMakeVisible(nameLabel_);
+	nameLabel_.setText("Liminal Signals - Farkle", dontSendNotification);
+	nameLabel_.setFont(Font(30.0f, Font::bold));
+	nameLabel_.setColour(Label::textColourId, Colours::grey);
 }
 
 void FarkleAudioProcessorEditor::addPresetComboBox() {
@@ -64,10 +69,15 @@ void FarkleAudioProcessorEditor::addPresetComboBox() {
 
 void FarkleAudioProcessorEditor::addVisualizations()
 {
+	addAndMakeVisible(visualizationsLabel_);
+	visualizationsLabel_.setText("Visualizations:", dontSendNotification);	
+	visualizationsLabel_.setFont(Font(15.0f, Font::bold));
+	visualizationsLabel_.setColour(Label::textColourId, Colours::black);
 
 	// make a horizontal slider widget for the current delay time
 	currentDelaySlider_.setSliderStyle(Slider::LinearHorizontal);
-	currentDelaySlider_.setRange(0.0, processor.delayBufferLength_ * processor.inverseSampleRate_, 0.0001);
+	//currentDelaySlider_.setRange(0.0, processor.delayBufferLength_ * processor.inverseSampleRate_, 0.0001);
+	currentDelaySlider_.setRange(0.0, 0.5, 0.0001);
 	currentDelaySlider_.setTextBoxStyle(Slider::TextBoxLeft, true, 120, currentDelaySlider_.getTextBoxHeight());
 	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
 	currentDelaySlider_.setTextValueSuffix("samples"); 
@@ -123,6 +133,11 @@ void FarkleAudioProcessorEditor::addVisualizations()
 
 void FarkleAudioProcessorEditor::addParamterControls()
 {
+	addAndMakeVisible(paramsLabel_);
+	paramsLabel_.setText("Parameters:", dontSendNotification);
+	paramsLabel_.setFont(Font(15.0f, Font::bold));
+	paramsLabel_.setColour(Label::textColourId, Colours::black);
+
 	// make a horizontal slider widget for the main LFO base frequency
 	mainLFOBaseFrequencySlider_.setSliderStyle(Slider::LinearHorizontal);
 	mainLFOBaseFrequencySlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mainLFOBaseFrequencySlider_.getTextBoxHeight());
@@ -193,7 +208,7 @@ void FarkleAudioProcessorEditor::addParamterControls()
 	mixSlider_.setRange(0.0, 1.0, 0.01);
 	mixSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 120, mixSlider_.getTextBoxHeight());
 	mixSlider_.setPopupDisplayEnabled(true, false, this);
-	mixSlider_.setTextValueSuffix("%"); //TODO attach a label instead
+	mixSlider_.setTextValueSuffix("%");
 
 	addAndMakeVisible(&mixSlider_);
 	mixAttachment = new SliderAttachment(valueTreeState, processor.PID_MIX, mixSlider_);
@@ -211,6 +226,10 @@ void FarkleAudioProcessorEditor::addInterpolationTypeComboBox()
 	interpolationComboBox_.addItem("Cubic", 4);
 	addAndMakeVisible(interpolationComboBox_);
 	interpolationAttachment = new ComboBoxAttachment(valueTreeState, processor.PID_INTERPOLATION, interpolationComboBox_);
+
+	addAndMakeVisible(interpolationLabel_);
+	interpolationLabel_.setText("Interpolation", dontSendNotification);
+	interpolationLabel_.attachToComponent(&interpolationComboBox_, true);
 }
 
 //==============================================================================
@@ -221,28 +240,33 @@ void FarkleAudioProcessorEditor::paint (Graphics& g)
 
     g.setColour (Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Farkle", getLocalBounds(), Justification::topLeft, 1);
+   // g.drawFittedText ("Farkle", getLocalBounds(), Justification::topLeft, 1);
 }
 
 inline void FarkleAudioProcessorEditor::resized()
 {
-	// lay out the positions of the widgets
-	presetComboBox_.setBounds(40, 30, 150, 30);
-	// visualizations
-	currentDelaySlider_.setBounds(40, presetComboBox_.getBottom(), 300, 40);
-	delayWritePositionSlider_.setBounds(40, currentDelaySlider_.getBottom(), 300, 40);
-	delayReadPositionSlider_.setBounds(40, delayWritePositionSlider_.getBottom(), 300, 40);
-	mainLFOFrequencySlider_.setBounds(40, delayReadPositionSlider_.getBottom(), 300, 40);
-	// user parameters
-	mainLFOBaseFrequencySlider_.setBounds(40, mainLFOFrequencySlider_.getBottom() + 20, 300, 40);
-	mainLFOWidthSlider_.setBounds(40, mainLFOBaseFrequencySlider_.getBottom(), 300, 40);
 
-	secondLFOFrequencySlider_.setBounds(40, mainLFOWidthSlider_.getBottom(), 300, 40);
-	secondLFOWidthSlider_.setBounds(40, secondLFOFrequencySlider_.getBottom(), 300, 40);
-	predelaySlider_.setBounds(40, secondLFOWidthSlider_.getBottom(), 300, 40);
-	mixSlider_.setBounds(40, predelaySlider_.getBottom(), 300, 40);
+	// lay out the positions of the widgets
+	presetComboBox_.setBounds(LEFT_PADDING, 10, 150, 30);
+	// visualizations
+	visualizationsLabel_.setBounds(0, presetComboBox_.getBottom(), 300, 40);
+	currentDelaySlider_.setBounds(LEFT_PADDING, visualizationsLabel_.getBottom(), 300, 40);
+	delayWritePositionSlider_.setBounds(LEFT_PADDING, currentDelaySlider_.getBottom(), 300, 40);
+	delayReadPositionSlider_.setBounds(LEFT_PADDING, delayWritePositionSlider_.getBottom(), 300, 40);
+	mainLFOFrequencySlider_.setBounds(LEFT_PADDING, delayReadPositionSlider_.getBottom(), 300, 40);
+	// user parameters
+	paramsLabel_.setBounds(0, mainLFOFrequencySlider_.getBottom() + 20, 300, 40);
+	mainLFOBaseFrequencySlider_.setBounds(LEFT_PADDING, paramsLabel_.getBottom(), 300, 40);
+	mainLFOWidthSlider_.setBounds(LEFT_PADDING, mainLFOBaseFrequencySlider_.getBottom(), 300, 40);
+
+	secondLFOFrequencySlider_.setBounds(LEFT_PADDING, mainLFOWidthSlider_.getBottom(), 300, 40);
+	secondLFOWidthSlider_.setBounds(LEFT_PADDING, secondLFOFrequencySlider_.getBottom(), 300, 40);
+	predelaySlider_.setBounds(LEFT_PADDING, secondLFOWidthSlider_.getBottom(), 300, 40);
+	mixSlider_.setBounds(LEFT_PADDING, predelaySlider_.getBottom(), 300, 40);
 	// interpolation combo box
-	interpolationComboBox_.setBounds(40, mixSlider_.getBottom(), 150, 30);
+	interpolationComboBox_.setBounds(LEFT_PADDING, mixSlider_.getBottom(), 150, 30);
+	// branding
+	nameLabel_.setBounds(0, interpolationComboBox_.getBottom()+30, 400, 30);
 }
 
 void FarkleAudioProcessorEditor::timerCallback() {

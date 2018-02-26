@@ -43,10 +43,11 @@ private:
 	AudioProcessorValueTreeState& valueTreeState;
 
 	LookAndFeel_V4 nonEditableLook;
-
+	Label nameLabel_;
 	ComboBox presetComboBox_;
 	OwnedArray<PresetFile> presetArray_;
 
+	Label visualizationsLabel_;
 	Slider currentDelaySlider_;
 	Slider delayWritePositionSlider_;
 	Slider delayReadPositionSlider_;
@@ -56,6 +57,8 @@ private:
 	Label delayWritePositionLabel_;
 	Label delayReadPositionLabel_;
 	Label mainLFOFrequencyLabel_;
+
+	Label paramsLabel_;
 
 	Slider mainLFOBaseFrequencySlider_;
 	ScopedPointer<SliderAttachment> mainLfoFreqAttachment;
@@ -81,7 +84,9 @@ private:
 
 	ComboBox interpolationComboBox_;
 	ScopedPointer<ComboBoxAttachment> interpolationAttachment;
-
+	Label interpolationLabel_;
+	//==============================================================================
+	const int LEFT_PADDING = 80;
 	//==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FarkleAudioProcessorEditor)
 };
