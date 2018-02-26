@@ -34,7 +34,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	parameters.createAndAddParameter(PID_MAINLFOCENTERFREQ, // parameter ID
 		"Main LFO Center Frequency", // paramter Name
 		String("Hz"), // parameter label (suffix)
-		NormalisableRange<float>(0.0f, 5.0f), //range
+		NormalisableRange<float>(0.0f, 5.0f,0,0.5f), //range
 		1.92f, // default value
 		nullptr,
 		nullptr);
@@ -42,7 +42,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	parameters.createAndAddParameter(PID_MAINLFOWIDTH, // parameter ID
 		"Main LFO Width", // paramter Name
 		String(), // parameter label (suffix)
-		NormalisableRange<float>(0.0f, 1.0f), //range
+		NormalisableRange<float>(0.0f, 1.0f,0,0.5f), //range
 		0.02f, // default value
 		nullptr,
 		nullptr);
@@ -50,7 +50,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	parameters.createAndAddParameter(PID_SECONDLFOFREQ, // parameter ID
 		"2nd LFO Frequency", // paramter Name
 		String(), // parameter label (suffix)
-		NormalisableRange<float>(0.0f, 5.0f), //range
+		NormalisableRange<float>(0.0f, 5.0f,0,0.5f), //range
 		0.958f, // default value
 		nullptr,
 		nullptr);
@@ -58,7 +58,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	parameters.createAndAddParameter(PID_SECONDLFOWIDTH, // parameter ID
 		"2nd LFO Width", // paramter Name
 		String(), // parameter label (suffix)
-		NormalisableRange<float>(0.0f, 1.0f), //range
+		NormalisableRange<float>(0.0f, 1.0f, 0, 0.5f), //range
 		0.685f, // default value
 		nullptr,
 		nullptr);
@@ -74,7 +74,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	parameters.createAndAddParameter(PID_PREDELAY, // parameter ID
 		"Predelay", // paramter Name
 		String(), // parameter label (suffix)
-		NormalisableRange<float>(0.0f, 3.0f), //range
+		NormalisableRange<float>(0.0f, 3.0f, 0, 0.5f), //range
 		0.247f, // default value
 		nullptr,
 		nullptr);
@@ -288,7 +288,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			assert(local_secondLFOPhase<1.0);
 
 			// update the main LFO's frequency
-			local_mainLFOFrequency = local_mainLFOBaseFrequency + local_secondLFOWidth * (sinf(2.0f * float_Pi * local_secondLFOPhase) ); //TODO make this more effecient
+			local_mainLFOFrequency = local_mainLFOBaseFrequency + local_secondLFOWidth * (0.5f + 0.5f * sinf(2.0f * float_Pi * local_secondLFOPhase) ); //TODO make this more effecient
 			assert(local_mainLFOFrequency>=0.0);
 
 			// update the main LFO's phase by the amount it should be increased per sample, at its current frequency

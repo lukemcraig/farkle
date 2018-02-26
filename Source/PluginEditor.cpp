@@ -72,6 +72,7 @@ void FarkleAudioProcessorEditor::addVisualizations()
 	currentDelaySlider_.setPopupDisplayEnabled(true, false, this);
 	currentDelaySlider_.setTextValueSuffix("Current Delay"); //TODO attach a label instead
 	currentDelaySlider_.setValue(0.0);
+
 	currentDelaySlider_.setLookAndFeel(&nonEditableLook); // TODO why does this need the address-of operator?		
 	addAndMakeVisible(&currentDelaySlider_);
 
