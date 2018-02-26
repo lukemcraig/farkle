@@ -52,10 +52,15 @@ private:
 	Slider delayReadPositionSlider_;
 	Slider mainLFOFrequencySlider_;
 
+	Label currentDelayLabel_;
+	Label delayWritePositionLabel_;
+	Label delayReadPositionLabel_;
+	Label mainLFOFrequencyLabel_;
+
 	Slider mainLFOBaseFrequencySlider_;
 	ScopedPointer<SliderAttachment> mainLfoFreqAttachment;
 	Slider mainLFOWidthSlider_;
-	ScopedPointer<SliderAttachment> mainLfoWidthAttachment;
+	ScopedPointer<SliderAttachment> mainLfoWidthAttachment;	
 
 	Slider secondLFOFrequencySlider_;
 	ScopedPointer<SliderAttachment> secondLfoFreqAttachment;
@@ -66,6 +71,13 @@ private:
 	ScopedPointer<SliderAttachment> predelayAttachment;
 	Slider mixSlider_;
 	ScopedPointer<SliderAttachment> mixAttachment;
+
+	Label mainLFOBaseFrequencyLabel_;
+	Label mainLFOWidthLabel_;
+	Label secondLFOFrequencyLabel_;
+	Label secondLFOWidthLabel_;
+	Label predelayLabel_;
+	Label mixLabel_;
 
 	ComboBox interpolationComboBox_;
 	ScopedPointer<ComboBoxAttachment> interpolationAttachment;
