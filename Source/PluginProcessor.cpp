@@ -225,6 +225,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	float one_minus_mix = 0.0;
 	float drp = 0.0;
 	int local_interpolationType = 1;
+
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
 		// get the pointer to the main audio buffer
@@ -244,10 +245,10 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		local_mainLFOPhase = mainLFOPhase_;
 		local_secondLFOPhase = secondLFOPhase_;
 		local_mainLFOFrequency = mainLFOFreq_;
-
+		float previous_sample = 0.0f;
 		for (int sample = 0; sample < numSamples; ++sample) {	
 
-			float interpolatedSample = 0.0;
+			
 			// calculate the (fractional) delay in seconds based on the lfo's current amplitude
 			currentDelay = local_mainLFOWidth * (0.5f + 0.5f * sinf(2.0f * float_Pi * local_mainLFOPhase)); //TODO make this more effecient
 			currentDelay += local_predelay;
@@ -255,7 +256,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			drp = (float)dwp - (float)(currentDelay) * (float)getSampleRate() + (float)delayBufferLength_ - 3.0f;
 			// and then wrap it around the circular buffer (fmodf instead of % because it's a float)
 			drp = fmodf(drp,  (float)delayBufferLength_);
-
+			float interpolatedSample = 0.0;
 			// and then we need to do interpolation to calculate a sample amplitude "inbetween" integer indicies
 			if(local_interpolationType == 0)
 				NearestNeighborInterpolation(drp, delayData, interpolatedSample);
@@ -265,12 +266,18 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 				SecondOrderPolynomialInterpolation(drp, delayData, interpolatedSample);
 			if (local_interpolationType == 3)
 				CubicInterpolation(drp, delayData, interpolatedSample);
-
+			
+			float in = channelData[sample];
+			
 			// the input sample is written to delayData at the write pointer
-			delayData[dwp] = channelData[sample];			
+			delayData[dwp] = in;
+			
+			float filteredInterpolatedSample = (interpolatedSample + previous_sample)*0.5f;
+			previous_sample = interpolatedSample;
 
 			// the output sample is the interpolatedSample
-			float out  = (interpolatedSample*local_mix) + (channelData[sample] * one_minus_mix);
+			float out  = (filteredInterpolatedSample*local_mix) + (channelData[sample] * one_minus_mix);
+	
 			channelData[sample] = out;
 			//channelData[sample] = interpolatedSample;
 
