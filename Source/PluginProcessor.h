@@ -77,7 +77,7 @@ private:
 	void CubicInterpolation(float drp, float * delayData, float &interpolatedSample);
 	void SecondOrderPolynomialInterpolation(float drp, float * delayData, float &interpolatedSample);
 	//==============================================================================
-	
+	float previousSample_;
 	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
 	//==============================================================================

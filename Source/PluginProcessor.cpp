@@ -30,6 +30,7 @@ FarkleAudioProcessor::FarkleAudioProcessor()
 	mainLFOFreq_ = 0.0;
 	mainLFOPhase_ = 0.0;
 	secondLFOPhase_ = 0.0;
+	previousSample_ = 0.0;
 
 	parameters.createAndAddParameter(PID_MAINLFOCENTERFREQ, // parameter ID
 		"Main LFO Center Frequency", // paramter Name
@@ -225,6 +226,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	float one_minus_mix = 0.0;
 	float drp = 0.0;
 	int local_interpolationType = 1;
+	float localPreviousSample = 0.0f;
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -245,10 +247,9 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 		local_mainLFOPhase = mainLFOPhase_;
 		local_secondLFOPhase = secondLFOPhase_;
 		local_mainLFOFrequency = mainLFOFreq_;
-		float previous_sample = 0.0f;
-		for (int sample = 0; sample < numSamples; ++sample) {	
+		localPreviousSample = previousSample_;
 
-			
+		for (int sample = 0; sample < numSamples; ++sample) {				
 			// calculate the (fractional) delay in seconds based on the lfo's current amplitude
 			currentDelay = local_mainLFOWidth * (0.5f + 0.5f * sinf(2.0f * float_Pi * local_mainLFOPhase)); //TODO make this more effecient
 			currentDelay += local_predelay;
@@ -272,8 +273,8 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 			// the input sample is written to delayData at the write pointer
 			delayData[dwp] = in;
 			
-			float filteredInterpolatedSample = (interpolatedSample + previous_sample)*0.5f;
-			previous_sample = interpolatedSample;
+			float filteredInterpolatedSample = (interpolatedSample + localPreviousSample)*0.5f;
+			localPreviousSample = interpolatedSample;
 
 			// the output sample is the interpolatedSample
 			float out  = (filteredInterpolatedSample*local_mix) + (channelData[sample] * one_minus_mix);
@@ -313,7 +314,7 @@ void FarkleAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& 
 	mainLFOPhase_ = local_mainLFOPhase;
 	mainLFOFreq_ = local_mainLFOFrequency;
 	secondLFOPhase_ = local_secondLFOPhase;
-
+	previousSample_ = localPreviousSample;
 	// debugging instance variables
 	currentDelayValueDebug_ = currentDelay;
 	delayReadPositionDebug_ = drp;
